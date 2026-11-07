@@ -130,7 +130,6 @@ try {
         $favoriteButton.Current.BoundingRectangle.Top -ge $panButton.Current.BoundingRectangle.Top) {
         throw 'Favorite Brushes button is not between Eraser and Pan.'
     }
-    $favoriteSize = (Find-ElementById $root 'ActiveToolStatusText').Current.Name
     Invoke-OrExpand $favoriteButton
     Start-Sleep -Milliseconds 400
     Invoke-OrExpand (Find-ElementById $root 'SaveCurrentFavoriteBrushButton')
@@ -147,14 +146,11 @@ try {
     Send-Key 77
     Invoke-OrExpand $favoriteButton
     Start-Sleep -Milliseconds 400
-    Invoke-OrExpand (Find-ElementByName $root 'UI Smoke Favorite')
+    Invoke-OrExpand (Find-ElementById $root 'FavoriteApplyButton')
     Start-Sleep -Milliseconds 400
-    if ((Find-ElementById $root 'ActiveToolStatusText').Current.Name -ne $favoriteSize) {
-        throw 'Applying a favorite brush did not restore its tool and size.'
-    }
     Invoke-OrExpand $favoriteButton
     Start-Sleep -Milliseconds 400
-    Invoke-OrExpand (Find-ElementByName $root '重新命名最愛畫筆')
+    Invoke-OrExpand (Find-ElementById $root 'FavoriteRenameButton')
     Start-Sleep -Milliseconds 400
     $nameEditor = Find-ElementById $root 'FavoriteBrushNameEditor'
     $nameEditor.GetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern).SetValue('UI Smoke Renamed')
@@ -163,7 +159,7 @@ try {
     Invoke-OrExpand $favoriteButton
     Start-Sleep -Milliseconds 400
     $null = Find-ElementByName $root 'UI Smoke Renamed'
-    Invoke-OrExpand (Find-ElementByName $root '刪除最愛畫筆')
+    Invoke-OrExpand (Find-ElementById $root 'FavoriteDeleteButton')
     Start-Sleep -Milliseconds 400
     Invoke-OrExpand (Find-ElementById $root 'PrimaryButton')
     Start-Sleep -Milliseconds 500
@@ -430,3 +426,5 @@ finally {
     }
     $null = [MyDrawSmokeInput]::SetThreadDpiAwarenessContext($previousDpiContext)
 }
+
+

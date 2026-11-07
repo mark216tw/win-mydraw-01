@@ -21,7 +21,7 @@ public partial class MainViewModel : ObservableObject
     private PressureCurve _pressureCurve = PressureCurve.Linear;
     private AirbrushMode _selectedAirbrushMode = AirbrushMode.Mist;
     private Color _selectedColor = Color.FromArgb(255, 31, 41, 55);
-    private DrawingTool _selectedTool = DrawingTool.Pencil;
+    private DrawingTool _selectedTool = DrawingTool.Ballpoint;
     private bool _useOpacityPressure;
     private bool _useSizePressure = true;
     private float _zoom = 0.5f;
@@ -284,6 +284,44 @@ public partial class MainViewModel : ObservableObject
         PersistFavoriteBrushes();
     }
 
+    public IReadOnlyList<string> RecentProjects => _settingsService.Settings.RecentProjects;
+
+    public void AddRecentProject(string filePath)
+    {
+        if (string.IsNullOrWhiteSpace(filePath))
+        {
+            return;
+        }
+
+        List<string> recentProjects = _settingsService.Settings.RecentProjects;
+        recentProjects.RemoveAll(path =>
+            string.Equals(path, filePath, StringComparison.OrdinalIgnoreCase));
+        recentProjects.Insert(0, filePath);
+        if (recentProjects.Count > 10)
+        {
+            recentProjects.RemoveRange(10, recentProjects.Count - 10);
+        }
+
+        _settingsService.Save();
+    }
+
+    public void ClearRecentProjects()
+    {
+        _settingsService.Settings.RecentProjects.Clear();
+        _settingsService.Save();
+    }
+
+    public void PruneMissingRecentProjects()
+    {
+        List<string> recentProjects = _settingsService.Settings.RecentProjects;
+        int removed = recentProjects.RemoveAll(path =>
+            string.IsNullOrWhiteSpace(path) || !File.Exists(path));
+        if (removed > 0)
+        {
+            _settingsService.Save();
+        }
+    }
+
     public void MoveFavoriteBrush(Guid id, int direction)
     {
         if (direction is not (-1 or 1))
@@ -416,7 +454,7 @@ public partial class MainViewModel : ObservableObject
 
     private void PersistToolSettingsToAppSettings()
     {
-        _settingsService.Settings.SettingsVersion = 2;
+        _settingsService.Settings.SettingsVersion = 3;
         _settingsService.Settings.BrushToolSettings = _toolSettings.Values
             .Select(settings => new BrushToolSettings
             {

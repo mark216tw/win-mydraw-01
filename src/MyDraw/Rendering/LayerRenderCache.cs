@@ -8,11 +8,10 @@ using Windows.UI;
 
 namespace Com.StudentTools.MyDraw.Rendering;
 
-internal sealed class LayerRenderCache
+internal sealed class LayerRenderCache : IDisposable
 {
     private const int TileSize = 512;
     private readonly Dictionary<(int X, int Y), CanvasRenderTarget> _tiles = [];
-    private readonly Dictionary<(int X, int Y), CanvasRenderTarget> _highlighterTiles = [];
     private readonly List<DrawingStroke> _strokes = [];
     private int _canvasHeight;
     private int _canvasWidth;
@@ -25,11 +24,13 @@ internal sealed class LayerRenderCache
         int canvasHeight,
         float dpi)
     {
-        if (_canvasWidth != canvasWidth ||
+        bool sizeChanged =
+            _canvasWidth != canvasWidth ||
             _canvasHeight != canvasHeight ||
-            MathF.Abs(_dpi - dpi) > 0.01f ||
-            _strokes.Count > strokes.Count ||
-            !HasSamePrefix(strokes))
+            MathF.Abs(_dpi - dpi) > 0.01f;
+        if (sizeChanged ||
+            _strokes.Count > strokes.Count + 1 ||
+            !HasSamePrefix(strokes, Math.Min(_strokes.Count, strokes.Count)))
         {
             Rebuild(device, strokes, canvasWidth, canvasHeight, dpi);
             return;
@@ -37,6 +38,12 @@ internal sealed class LayerRenderCache
 
         if (_strokes.Count == strokes.Count)
         {
+            return;
+        }
+
+        if (_strokes.Count == strokes.Count + 1)
+        {
+            RemoveLastStroke(device, strokes);
             return;
         }
 
@@ -49,26 +56,7 @@ internal sealed class LayerRenderCache
 
     public void Draw(CanvasDrawingSession drawingSession, Rect? visibleBounds)
     {
-        DrawTiles(drawingSession, _tiles, visibleBounds);
-        DrawTiles(drawingSession, _highlighterTiles, visibleBounds);
-    }
-
-    public void Dispose()
-    {
-        DisposeTiles(_tiles);
-        DisposeTiles(_highlighterTiles);
-        _strokes.Clear();
-        _canvasWidth = 0;
-        _canvasHeight = 0;
-        _dpi = 96f;
-    }
-
-    private static void DrawTiles(
-        CanvasDrawingSession drawingSession,
-        Dictionary<(int X, int Y), CanvasRenderTarget> tiles,
-        Rect? visibleBounds)
-    {
-        foreach (((int x, int y), CanvasRenderTarget tile) in tiles)
+        foreach (((int x, int y), CanvasRenderTarget tile) in _tiles)
         {
             if (visibleBounds is { } visible &&
                 !Intersects(visible, GetTileBounds(tile, x, y)))
@@ -80,15 +68,18 @@ internal sealed class LayerRenderCache
         }
     }
 
-    private static void DisposeTiles(
-        Dictionary<(int X, int Y), CanvasRenderTarget> tiles)
+    public void Dispose()
     {
-        foreach (CanvasRenderTarget tile in tiles.Values)
+        foreach (CanvasRenderTarget tile in _tiles.Values)
         {
             tile.Dispose();
         }
 
-        tiles.Clear();
+        _tiles.Clear();
+        _strokes.Clear();
+        _canvasWidth = 0;
+        _canvasHeight = 0;
+        _dpi = 96f;
     }
 
     private static bool Intersects(Rect left, Rect right) =>
@@ -107,9 +98,9 @@ internal sealed class LayerRenderCache
             tile.SizeInPixels.Height * scale);
     }
 
-    private bool HasSamePrefix(IReadOnlyList<DrawingStroke> strokes)
+    private bool HasSamePrefix(IReadOnlyList<DrawingStroke> strokes, int count)
     {
-        for (int index = 0; index < _strokes.Count; index++)
+        for (int index = 0; index < count; index++)
         {
             if (!ReferenceEquals(_strokes[index], strokes[index]))
             {
@@ -138,6 +129,92 @@ internal sealed class LayerRenderCache
         }
     }
 
+    private void RemoveLastStroke(
+        CanvasDevice device,
+        IReadOnlyList<DrawingStroke> strokes)
+    {
+        DrawingStroke removed = _strokes[^1];
+        _strokes.RemoveAt(_strokes.Count - 1);
+
+        HashSet<(int X, int Y)> dirtyTiles = GetTiles(GetStrokeBounds(removed));
+        if (dirtyTiles.Count == 0)
+        {
+            return;
+        }
+
+        List<(DrawingStroke Stroke, HashSet<(int X, int Y)> Tiles)> remaining = [];
+        foreach (DrawingStroke stroke in _strokes)
+        {
+            remaining.Add((stroke, GetTiles(GetStrokeBounds(stroke))));
+        }
+
+        bool expanded = true;
+        while (expanded)
+        {
+            expanded = false;
+            foreach ((DrawingStroke Stroke, HashSet<(int X, int Y)> Tiles) entry in remaining)
+            {
+                if (!entry.Tiles.Overlaps(dirtyTiles))
+                {
+                    continue;
+                }
+
+                foreach ((int X, int Y) tile in entry.Tiles)
+                {
+                    expanded |= dirtyTiles.Add(tile);
+                }
+            }
+        }
+
+        int totalTiles = GetTotalTileCount();
+        if (totalTiles > 0 && dirtyTiles.Count * 4 >= totalTiles * 3)
+        {
+            Rebuild(device, strokes, _canvasWidth, _canvasHeight, _dpi);
+            return;
+        }
+
+        foreach ((int X, int Y) tileKey in dirtyTiles)
+        {
+            if (_tiles.Remove(tileKey, out CanvasRenderTarget? tile))
+            {
+                tile.Dispose();
+            }
+        }
+
+        foreach ((DrawingStroke Stroke, HashSet<(int X, int Y)> Tiles) entry in remaining)
+        {
+            if (entry.Tiles.Overlaps(dirtyTiles))
+            {
+                RenderStroke(device, entry.Stroke);
+            }
+        }
+    }
+
+    private HashSet<(int X, int Y)> GetTiles(Rect bounds)
+    {
+        HashSet<(int X, int Y)> tiles = [];
+        int firstTileX = Math.Max(0, (int)Math.Floor(bounds.Left / TileSize));
+        int firstTileY = Math.Max(0, (int)Math.Floor(bounds.Top / TileSize));
+        int lastTileX = Math.Min((_canvasWidth - 1) / TileSize, (int)Math.Floor(bounds.Right / TileSize));
+        int lastTileY = Math.Min((_canvasHeight - 1) / TileSize, (int)Math.Floor(bounds.Bottom / TileSize));
+        for (int tileY = firstTileY; tileY <= lastTileY; tileY++)
+        {
+            for (int tileX = firstTileX; tileX <= lastTileX; tileX++)
+            {
+                tiles.Add((tileX, tileY));
+            }
+        }
+
+        return tiles;
+    }
+
+    private int GetTotalTileCount()
+    {
+        int columns = Math.Max(1, (_canvasWidth + TileSize - 1) / TileSize);
+        int rows = Math.Max(1, (_canvasHeight + TileSize - 1) / TileSize);
+        return columns * rows;
+    }
+
     private void RenderStroke(CanvasDevice device, DrawingStroke stroke)
     {
         if (stroke.Points.Count == 0)
@@ -156,44 +233,12 @@ internal sealed class LayerRenderCache
         }
 
         using PreparedStroke prepared = BrushRenderer.Prepare(device, stroke);
-        if (stroke.Tool == DrawingTool.Eraser)
-        {
-            RenderTiles(device, stroke, prepared, _tiles, firstTileX, firstTileY, lastTileX, lastTileY, false);
-            RenderTiles(device, stroke, prepared, _highlighterTiles, firstTileX, firstTileY, lastTileX, lastTileY, false);
-            return;
-        }
-
-        bool isHighlighter = stroke.Tool == DrawingTool.Highlighter;
-        RenderTiles(
-            device,
-            stroke,
-            prepared,
-            isHighlighter ? _highlighterTiles : _tiles,
-            firstTileX,
-            firstTileY,
-            lastTileX,
-            lastTileY,
-            isHighlighter);
-    }
-
-    private void RenderTiles(
-        CanvasDevice device,
-        DrawingStroke stroke,
-        PreparedStroke prepared,
-        Dictionary<(int X, int Y), CanvasRenderTarget> tiles,
-        int firstTileX,
-        int firstTileY,
-        int lastTileX,
-        int lastTileY,
-        bool copyBlend)
-    {
         for (int tileY = firstTileY; tileY <= lastTileY; tileY++)
         {
             for (int tileX = firstTileX; tileX <= lastTileX; tileX++)
             {
                 CanvasRenderTarget? tile = GetOrCreateTile(
                     device,
-                    tiles,
                     tileX,
                     tileY,
                     stroke.Tool != DrawingTool.Eraser);
@@ -204,7 +249,7 @@ internal sealed class LayerRenderCache
 
                 using CanvasDrawingSession session = tile.CreateDrawingSession();
                 session.Transform = Matrix3x2.CreateTranslation(-tileX * TileSize, -tileY * TileSize);
-                session.Blend = copyBlend ? CanvasBlend.Copy : CanvasBlend.SourceOver;
+                session.Blend = CanvasBlend.SourceOver;
                 BrushRenderer.Draw(session, stroke, prepared);
             }
         }
@@ -234,12 +279,11 @@ internal sealed class LayerRenderCache
 
     private CanvasRenderTarget? GetOrCreateTile(
         CanvasDevice device,
-        Dictionary<(int X, int Y), CanvasRenderTarget> tiles,
         int x,
         int y,
         bool create)
     {
-        if (tiles.TryGetValue((x, y), out CanvasRenderTarget? tile) || !create)
+        if (_tiles.TryGetValue((x, y), out CanvasRenderTarget? tile) || !create)
         {
             return tile;
         }
@@ -252,7 +296,7 @@ internal sealed class LayerRenderCache
             session.Clear(Colors.Transparent);
         }
 
-        tiles.Add((x, y), tile);
+        _tiles.Add((x, y), tile);
         return tile;
     }
 }

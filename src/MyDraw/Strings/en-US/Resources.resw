@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="AppTitle" xml:space="preserve"><value>MyDraw</value></data>
+
+  <data name="FileMenu.Title" xml:space="preserve"><value>File</value></data>
+  <data name="FileMenu.AutomationProperties.Name" xml:space="preserve"><value>File menu</value></data>
+  <data name="MenuFileNew.Text" xml:space="preserve"><value>New Canvas</value></data>
+  <data name="MenuFileOpen.Text" xml:space="preserve"><value>Open Project…</value></data>
+  <data name="MenuFileSave.Text" xml:space="preserve"><value>Save Project</value></data>
+  <data name="MenuFileSaveAs.Text" xml:space="preserve"><value>Save Project As…</value></data>
+  <data name="MenuFileExport.Text" xml:space="preserve"><value>Export PNG Image…</value></data>
+  <data name="MenuFileRecent.Text" xml:space="preserve"><value>Recent Projects</value></data>
+  <data name="MenuFileNoRecent.Text" xml:space="preserve"><value>No recent projects</value></data>
+  <data name="MenuFileClearRecent.Text" xml:space="preserve"><value>Clear Recent Projects</value></data>
+
+  <data name="EditMenu.Title" xml:space="preserve"><value>Edit</value></data>
+  <data name="EditMenu.AutomationProperties.Name" xml:space="preserve"><value>Edit menu</value></data>
+  <data name="MenuEditUndo.Text" xml:space="preserve"><value>Undo</value></data>
+  <data name="MenuEditRedo.Text" xml:space="preserve"><value>Redo</value></data>
+
+  <data name="CanvasMenu.Title" xml:space="preserve"><value>Canvas</value></data>
+  <data name="CanvasMenu.AutomationProperties.Name" xml:space="preserve"><value>Canvas menu</value></data>
+  <data name="MenuCanvasSize.Text" xml:space="preserve"><value>Canvas Size…</value></data>
+
+  <data name="ViewMenu.Title" xml:space="preserve"><value>View</value></data>
+  <data name="ViewMenu.AutomationProperties.Name" xml:space="preserve"><value>View menu</value></data>
+  <data name="MenuViewGrid.Text" xml:space="preserve"><value>Show Grid</value></data>
+  <data name="MenuViewZoomIn.Text" xml:space="preserve"><value>Zoom In</value></data>
+  <data name="MenuViewZoomOut.Text" xml:space="preserve"><value>Zoom Out</value></data>
+  <data name="MenuViewZoomReset.Text" xml:space="preserve"><value>Reset Zoom (100%)</value></data>
+  <data name="MenuViewImmersive.Text" xml:space="preserve"><value>Immersive Mode</value></data>
+  <data name="MenuViewFullScreen.Text" xml:space="preserve"><value>Full Screen</value></data>
+
+  <data name="SettingsMenu.Title" xml:space="preserve"><value>Settings</value></data>
+  <data name="SettingsMenu.AutomationProperties.Name" xml:space="preserve"><value>Settings menu</value></data>
+  <data name="MenuSettingsAppearance.Text" xml:space="preserve"><value>Appearance and Theme…</value></data>
+  <data name="MenuSettingsFileAssociation.Text" xml:space="preserve"><value>File Association…</value></data>
+
+  <data name="CanvasSizeButton.ToolTipService.ToolTip" xml:space="preserve"><value>Change canvas size (Ctrl+Alt+C)</value></data>
+  <data name="CanvasSizeButton.AutomationProperties.Name" xml:space="preserve"><value>Canvas size</value></data>
+  <data name="ZoomResetButton.ToolTipService.ToolTip" xml:space="preserve"><value>Reset to 100% (Ctrl+0)</value></data>
+  <data name="ZoomResetButton.AutomationProperties.Name" xml:space="preserve"><value>Reset canvas zoom</value></data>
+
+  <data name="UndoButton.ToolTipService.ToolTip" xml:space="preserve"><value>Undo (Ctrl+Z)</value></data>
+  <data name="UndoButton.AutomationProperties.Name" xml:space="preserve"><value>Undo</value></data>
+  <data name="RedoButton.ToolTipService.ToolTip" xml:space="preserve"><value>Redo (Ctrl+Y)</value></data>
+  <data name="RedoButton.AutomationProperties.Name" xml:space="preserve"><value>Redo</value></data>
+
+  <data name="PenTool.ToolTipService.ToolTip" xml:space="preserve"><value>Pen (P)</value></data>
+  <data name="PenTool.AutomationProperties.Name" xml:space="preserve"><value>Select pen</value></data>
+  <data name="PenToolLabel.Text" xml:space="preserve"><value>Pen</value></data>
+  <data name="PencilTool.ToolTipService.ToolTip" xml:space="preserve"><value>Pencil</value></data>
+  <data name="PencilTool.AutomationProperties.Name" xml:space="preserve"><value>Select pencil</value></data>
+  <data name="HighlighterTool.ToolTipService.ToolTip" xml:space="preserve"><value>Highlighter (M)</value></data>
+  <data name="HighlighterTool.AutomationProperties.Name" xml:space="preserve"><value>Select highlighter</value></data>
+
+  <data name="MoreBrushesButton.ToolTipService.ToolTip" xml:space="preserve"><value>More brushes (Marker, Airbrush, Pen, Crayon, Calligraphy)</value></data>
+  <data name="MoreBrushesButton.AutomationProperties.Name" xml:space="preserve"><value>Open more brushes menu</value></data>
+  <data name="MoreBrushesSectionTitle.Text" xml:space="preserve"><value>More Brushes</value></data>
+  <data name="MoreBrushesFormat" xml:space="preserve"><value>More brushes (current: {0})</value></data>
+
+  <data name="FavoriteBrushesButton.ToolTipService.ToolTip" xml:space="preserve"><value>Favorite Brushes</value></data>
+  <data name="FavoriteBrushesButton.AutomationProperties.Name" xml:space="preserve"><value>Open favorite brushes menu</value></data>
+  <data name="FavoriteBrushesSectionTitle.Text" xml:space="preserve"><value>Favorite Brushes</value></data>
+  <data name="SaveCurrentFavoriteBrushButton.Content" xml:space="preserve"><value>Save Current Brush</value></data>
+  <data name="SaveCurrentFavoriteBrushButton.AutomationProperties.Name" xml:space="preserve"><value>Save current brush as favorite</value></data>
+  <data name="FavoriteBrushEmptyState.Text" xml:space="preserve"><value>No favorite brushes yet</value></data>
+  <data name="SaveFavoriteBrushTitle" xml:space="preserve"><value>Save Favorite Brush</value></data>
+  <data name="RenameFavoriteBrushTitle" xml:space="preserve"><value>Rename Favorite Brush</value></data>
+  <data name="FavoriteBrushNameHeader" xml:space="preserve"><value>Brush name</value></data>
+  <data name="DefaultFavoriteBrushNameFormat" xml:space="preserve"><value>{0} {1}</value></data>
+  <data name="RenameFavoriteBrushButton.ToolTipService.ToolTip" xml:space="preserve"><value>Rename</value></data>
+  <data name="RenameFavoriteBrushButton.AutomationProperties.Name" xml:space="preserve"><value>Rename favorite brush</value></data>
+  <data name="DeleteFavoriteBrushButton.ToolTipService.ToolTip" xml:space="preserve"><value>Delete</value></data>
+  <data name="DeleteFavoriteBrushButton.AutomationProperties.Name" xml:space="preserve"><value>Delete favorite brush</value></data>
+  <data name="DeleteFavoriteBrushTitle" xml:space="preserve"><value>Delete Favorite Brush?</value></data>
+  <data name="DeleteFavoriteBrushMessage" xml:space="preserve"><value>Delete “{0}”? This cannot be undone.</value></data>
+  <data name="MoveFavoriteBrushUpButton.ToolTipService.ToolTip" xml:space="preserve"><value>Move up</value></data>
+  <data name="MoveFavoriteBrushUpButton.AutomationProperties.Name" xml:space="preserve"><value>Move favorite brush up</value></data>
+  <data name="MoveFavoriteBrushDownButton.ToolTipService.ToolTip" xml:space="preserve"><value>Move down</value></data>
+  <data name="MoveFavoriteBrushDownButton.AutomationProperties.Name" xml:space="preserve"><value>Move favorite brush down</value></data>
+
+  <data name="BallpointTool.ToolTipService.ToolTip" xml:space="preserve"><value>Ballpoint</value></data>
+  <data name="BallpointTool.AutomationProperties.Name" xml:space="preserve"><value>Select ballpoint</value></data>
+  <data name="BallpointToolLabel.Text" xml:space="preserve"><value>Ballpoint</value></data>
+  <data name="CalligraphyTool.ToolTipService.ToolTip" xml:space="preserve"><value>Calligraphy</value></data>
+  <data name="CalligraphyTool.AutomationProperties.Name" xml:space="preserve"><value>Select calligraphy pen</value></data>
+  <data name="CalligraphyToolLabel.Text" xml:space="preserve"><value>Calligraphy</value></data>
+  <data name="MarkerTool.ToolTipService.ToolTip" xml:space="preserve"><value>Marker</value></data>
+  <data name="MarkerTool.AutomationProperties.Name" xml:space="preserve"><value>Select marker</value></data>
+  <data name="MarkerToolLabel.Text" xml:space="preserve"><value>Marker</value></data>
+  <data name="AirbrushTool.ToolTipService.ToolTip" xml:space="preserve"><value>Airbrush</value></data>
+  <data name="AirbrushTool.AutomationProperties.Name" xml:space="preserve"><value>Select airbrush</value></data>
+  <data name="AirbrushToolLabel.Text" xml:space="preserve"><value>Airbrush</value></data>
+  <data name="CrayonTool.ToolTipService.ToolTip" xml:space="preserve"><value>Crayon</value></data>
+  <data name="CrayonTool.AutomationProperties.Name" xml:space="preserve"><value>Select crayon</value></data>
+  <data name="CrayonToolLabel.Text" xml:space="preserve"><value>Crayon</value></data>
+
+  <data name="EraserTool.ToolTipService.ToolTip" xml:space="preserve"><value>Eraser (E)</value></data>
+  <data name="EraserTool.AutomationProperties.Name" xml:space="preserve"><value>Select eraser</value></data>
+  <data name="PanTool.ToolTipService.ToolTip" xml:space="preserve"><value>Pan canvas (H or hold Space to drag)</value></data>
+  <data name="PanTool.AutomationProperties.Name" xml:space="preserve"><value>Select pan tool</value></data>
+
+  <data name="ToolNamePen" xml:space="preserve"><value>Pen</value></data>
+  <data name="ToolNamePencil" xml:space="preserve"><value>Pencil</value></data>
+  <data name="ToolNameBallpoint" xml:space="preserve"><value>Ballpoint</value></data>
+  <data name="ToolNameMarker" xml:space="preserve"><value>Marker</value></data>
+  <data name="ToolNameHighlighter" xml:space="preserve"><value>Highlighter</value></data>
+  <data name="ToolNameCalligraphy" xml:space="preserve"><value>Calligraphy</value></data>
+  <data name="ToolNameAirbrush" xml:space="preserve"><value>Airbrush</value></data>
+  <data name="ToolNameCrayon" xml:space="preserve"><value>Crayon</value></data>
+  <data name="ToolNameEraser" xml:space="preserve"><value>Eraser</value></data>
+  <data name="ToolNamePan" xml:space="preserve"><value>Pan</value></data>
+
+  <data name="BrushSettingsButton.ToolTipService.ToolTip" xml:space="preserve"><value>Brush size, opacity and pressure ([ / ] to change size)</value></data>
+  <data name="BrushSettingsButton.AutomationProperties.Name" xml:space="preserve"><value>Open brush settings</value></data>
+  <data name="BrushSectionTitle.Text" xml:space="preserve"><value>Brush Settings</value></data>
+  <data name="BrushSizeLabel.Text" xml:space="preserve"><value>Size</value></data>
+  <data name="BrushSizeSlider.AutomationProperties.Name" xml:space="preserve"><value>Brush size</value></data>
+  <data name="OpacityLabel.Text" xml:space="preserve"><value>Opacity</value></data>
+  <data name="OpacitySlider.AutomationProperties.Name" xml:space="preserve"><value>Brush opacity</value></data>
+  <data name="SizePressureCheckBox.Content" xml:space="preserve"><value>Pressure controls size</value></data>
+  <data name="OpacityPressureCheckBox.Content" xml:space="preserve"><value>Pressure controls opacity</value></data>
+  <data name="SoftnessLabel.Text" xml:space="preserve"><value>Softness</value></data>
+  <data name="SoftnessSlider.AutomationProperties.Name" xml:space="preserve"><value>Brush softness</value></data>
+  <data name="FlowLabel.Text" xml:space="preserve"><value>Flow</value></data>
+  <data name="FlowSlider.AutomationProperties.Name" xml:space="preserve"><value>Brush flow</value></data>
+  <data name="AirbrushModeLabel.Text" xml:space="preserve"><value>Airbrush Mode</value></data>
+  <data name="AirbrushModeComboBox.AutomationProperties.Name" xml:space="preserve"><value>Airbrush mode</value></data>
+  <data name="AirbrushModeMistItemText" xml:space="preserve"><value>Mist</value></data>
+  <data name="AirbrushModeGrainItemText" xml:space="preserve"><value>Grain</value></data>
+  <data name="PressureCurveLabel.Text" xml:space="preserve"><value>Pressure Curve</value></data>
+  <data name="PressureCurveComboBox.AutomationProperties.Name" xml:space="preserve"><value>Pressure curve</value></data>
+  <data name="PressureCurveSoftItemText" xml:space="preserve"><value>Soft</value></data>
+  <data name="PressureCurveLinearItemText" xml:space="preserve"><value>Linear</value></data>
+  <data name="PressureCurveHardItemText" xml:space="preserve"><value>Hard</value></data>
+
+  <data name="ColorFlyoutButton.ToolTipService.ToolTip" xml:space="preserve"><value>Brush color and custom palette</value></data>
+  <data name="ColorFlyoutButton.AutomationProperties.Name" xml:space="preserve"><value>Open color menu</value></data>
+  <data name="ColorSectionTitle.Text" xml:space="preserve"><value>Common Colors</value></data>
+  <data name="CustomColorExpander.Header" xml:space="preserve"><value>Custom Palette</value></data>
+  <data name="ColorPicker.AutomationProperties.Name" xml:space="preserve"><value>Custom brush color</value></data>
+  <data name="InkSwatch.AutomationProperties.Name" xml:space="preserve"><value>Dark gray</value></data>
+  <data name="WhiteSwatch.AutomationProperties.Name" xml:space="preserve"><value>White</value></data>
+  <data name="RedSwatch.AutomationProperties.Name" xml:space="preserve"><value>Red</value></data>
+  <data name="OrangeSwatch.AutomationProperties.Name" xml:space="preserve"><value>Orange</value></data>
+  <data name="YellowSwatch.AutomationProperties.Name" xml:space="preserve"><value>Yellow</value></data>
+  <data name="GreenSwatch.AutomationProperties.Name" xml:space="preserve"><value>Green</value></data>
+  <data name="TealSwatch.AutomationProperties.Name" xml:space="preserve"><value>Teal</value></data>
+  <data name="CyanSwatch.AutomationProperties.Name" xml:space="preserve"><value>Cyan</value></data>
+  <data name="BlueSwatch.AutomationProperties.Name" xml:space="preserve"><value>Blue</value></data>
+  <data name="IndigoSwatch.AutomationProperties.Name" xml:space="preserve"><value>Indigo</value></data>
+  <data name="PurpleSwatch.AutomationProperties.Name" xml:space="preserve"><value>Purple</value></data>
+  <data name="PinkSwatch.AutomationProperties.Name" xml:space="preserve"><value>Pink</value></data>
+  <data name="BrownSwatch.AutomationProperties.Name" xml:space="preserve"><value>Brown</value></data>
+  <data name="SlateSwatch.AutomationProperties.Name" xml:space="preserve"><value>Slate</value></data>
+  <data name="GraySwatch.AutomationProperties.Name" xml:space="preserve"><value>Light gray</value></data>
+  <data name="MistSwatch.AutomationProperties.Name" xml:space="preserve"><value>Mist</value></data>
+  <data name="AmberSwatch.AutomationProperties.Name" xml:space="preserve"><value>Amber</value></data>
+  <data name="LimeSwatch.AutomationProperties.Name" xml:space="preserve"><value>Lime</value></data>
+  <data name="SkySwatch.AutomationProperties.Name" xml:space="preserve"><value>Sky blue</value></data>
+  <data name="RoseSwatch.AutomationProperties.Name" xml:space="preserve"><value>Rose</value></data>
+
+  <data name="LayersFlyoutButton.ToolTipService.ToolTip" xml:space="preserve"><value>Layer management</value></data>
+  <data name="LayersFlyoutButton.AutomationProperties.Name" xml:space="preserve"><value>Open layers menu</value></data>
+  <data name="LayerSectionTitle.Text" xml:space="preserve"><value>Layers</value></data>
+  <data name="AddLayerButton.ToolTipService.ToolTip" xml:space="preserve"><value>Add layer</value></data>
+  <data name="AddLayerButton.AutomationProperties.Name" xml:space="preserve"><value>Add layer</value></data>
+  <data name="DefaultLayerName.Text" xml:space="preserve"><value>Layer 1</value></data>
+  <data name="DefaultLoadedLayerName" xml:space="preserve"><value>Layer</value></data>
+  <data name="NewLayerName" xml:space="preserve"><value>Layer {0}</value></data>
+  <data name="LayerNameEditor.Header" xml:space="preserve"><value>Layer name</value></data>
+  <data name="LayerNameEditor.AutomationProperties.Name" xml:space="preserve"><value>Layer name</value></data>
+  <data name="LayerVisibleCheckBox.Content" xml:space="preserve"><value>Visible</value></data>
+  <data name="LayerLockedCheckBox.Content" xml:space="preserve"><value>Locked</value></data>
+  <data name="LayerOpacitySlider.Header" xml:space="preserve"><value>Layer opacity</value></data>
+  <data name="LayerOpacitySlider.AutomationProperties.Name" xml:space="preserve"><value>Layer opacity</value></data>
+  <data name="LayerUpButton.ToolTipService.ToolTip" xml:space="preserve"><value>Move layer up</value></data>
+  <data name="LayerUpButton.AutomationProperties.Name" xml:space="preserve"><value>Move layer up</value></data>
+  <data name="LayerDownButton.ToolTipService.ToolTip" xml:space="preserve"><value>Move layer down</value></data>
+  <data name="LayerDownButton.AutomationProperties.Name" xml:space="preserve"><value>Move layer down</value></data>
+  <data name="DeleteLayerButton.ToolTipService.ToolTip" xml:space="preserve"><value>Delete layer</value></data>
+  <data name="DeleteLayerButton.AutomationProperties.Name" xml:space="preserve"><value>Delete layer</value></data>
+  <data name="DeleteLayerTitle" xml:space="preserve"><value>Delete Layer?</value></data>
+  <data name="DeleteLayerMessage" xml:space="preserve"><value>This layer and its strokes will be deleted. At least one layer must remain.</value></data>
+  <data name="DeleteButtonText" xml:space="preserve"><value>Delete</value></data>
+
+  <data name="CanvasHint.Text" xml:space="preserve"><value>Scroll to zoom · Right-drag or Space-drag to pan</value></data>
+  <data name="DrawingCanvas.AutomationProperties.Name" xml:space="preserve"><value>Drawing canvas</value></data>
+  <data name="DrawingCanvas.AutomationProperties.HelpText" xml:space="preserve"><value>Draw with a mouse, touch, or pen. Scroll to zoom; right-drag or hold Space to pan.</value></data>
+  <data name="SettingsTitle" xml:space="preserve"><value>Appearance and Theme</value></data>
+  <data name="DisplayModeHeader" xml:space="preserve"><value>Display Mode</value></data>
+  <data name="SystemModeText" xml:space="preserve"><value>Follow System</value></data>
+  <data name="LightModeText" xml:space="preserve"><value>Light</value></data>
+  <data name="DarkModeText" xml:space="preserve"><value>Dark</value></data>
+  <data name="ColorThemeHeader" xml:space="preserve"><value>Color Theme</value></data>
+  <data name="EyeCareThemeText" xml:space="preserve"><value>Eye Care Yellow</value></data>
+  <data name="OceanThemeText" xml:space="preserve"><value>Ocean Blue</value></data>
+  <data name="ForestThemeText" xml:space="preserve"><value>Forest Green</value></data>
+  <data name="LavenderThemeText" xml:space="preserve"><value>Lavender</value></data>
+  <data name="NeutralThemeText" xml:space="preserve"><value>Neutral Gray</value></data>
+
+  <data name="CanvasPresetCurrent" xml:space="preserve"><value>Current Size</value></data>
+  <data name="CanvasPresetCustom" xml:space="preserve"><value>Custom Size</value></data>
+  <data name="CanvasPresetA4Portrait" xml:space="preserve"><value>A4 Portrait 2480 × 3508</value></data>
+  <data name="CanvasPresetA4Landscape" xml:space="preserve"><value>A4 Landscape 3508 × 2480</value></data>
+  <data name="CanvasWidth" xml:space="preserve"><value>Width (pixels)</value></data>
+  <data name="CanvasHeight" xml:space="preserve"><value>Height (pixels)</value></data>
+  <data name="CanvasDialogTitle" xml:space="preserve"><value>Canvas Size</value></data>
+  <data name="CanvasShrinkTitle" xml:space="preserve"><value>Shrink Canvas?</value></data>
+  <data name="CanvasShrinkMessage" xml:space="preserve"><value>Content outside the new canvas will be hidden but not deleted. Enlarge the canvas later to show it again.</value></data>
+  <data name="ApplyButton" xml:space="preserve"><value>Apply</value></data>
+  <data name="ContinueButton" xml:space="preserve"><value>Continue</value></data>
+  <data name="CancelButton" xml:space="preserve"><value>Cancel</value></data>
+  <data name="CloseButton" xml:space="preserve"><value>Close</value></data>
+  <data name="UntitledFileName" xml:space="preserve"><value>Untitled</value></data>
+  <data name="ProjectFileType" xml:space="preserve"><value>MyDraw Project</value></data>
+  <data name="SaveFailedTitle" xml:space="preserve"><value>Unable to Save Project</value></data>
+  <data name="OpenFailedTitle" xml:space="preserve"><value>Unable to Open Project</value></data>
+  <data name="ProjectErrorManifestMissing" xml:space="preserve"><value>The project is missing a readable manifest.json.</value></data>
+  <data name="ProjectErrorNotMyDraw" xml:space="preserve"><value>This file is not a MyDraw project.</value></data>
+  <data name="ProjectErrorUnsupportedVersion" xml:space="preserve"><value>This project format version is not supported.</value></data>
+  <data name="ProjectErrorDocumentMissing" xml:space="preserve"><value>The project is missing a readable document.json.</value></data>
+  <data name="ProjectErrorCanvasSize" xml:space="preserve"><value>The project canvas size is invalid.</value></data>
+  <data name="ProjectErrorLayersMissing" xml:space="preserve"><value>The project is missing layer or stroke data.</value></data>
+  <data name="ProjectErrorNoLayers" xml:space="preserve"><value>The project does not contain any layers.</value></data>
+  <data name="ProjectErrorMissingEntry" xml:space="preserve"><value>The project is missing a required file.</value></data>
+  <data name="FileAssociationFailedMessage" xml:space="preserve"><value>Check permissions and try again. Details have been logged.</value></data>
+  <data name="ExportFailedTitle" xml:space="preserve"><value>Unable to Export Image</value></data>
+  <data name="ExportProgressTitle" xml:space="preserve"><value>Exporting PNG</value></data>
+  <data name="ExportProgressMessage" xml:space="preserve"><value>Export progress: {0:0}%</value></data>
+  <data name="RecoveryTitle" xml:space="preserve"><value>Recover Unsaved Project</value></data>
+  <data name="RecoveryMessage" xml:space="preserve"><value>Unsaved content for “{0}” was found from {1}. Recover it?</value></data>
+  <data name="RecoverButton" xml:space="preserve"><value>Recover</value></data>
+  <data name="DiscardRecoveryButton" xml:space="preserve"><value>Discard</value></data>
+  <data name="UnsavedTitle" xml:space="preserve"><value>Save Changes?</value></data>
+  <data name="UnsavedMessage" xml:space="preserve"><value>This drawing has not been saved. Save before closing?</value></data>
+  <data name="NewDocumentUnsavedMessage" xml:space="preserve"><value>This drawing has not been saved. Save before creating a new canvas?</value></data>
+  <data name="OpenDocumentUnsavedMessage" xml:space="preserve"><value>This drawing has not been saved. Save before opening another project?</value></data>
+  <data name="SaveButtonText" xml:space="preserve"><value>Save</value></data>
+  <data name="DontSaveButton" xml:space="preserve"><value>Don't Save</value></data>
+  <data name="ToolbarPositionHeader" xml:space="preserve"><value>Toolbar Position</value></data>
+  <data name="ToolbarLeftText" xml:space="preserve"><value>Left</value></data>
+  <data name="ToolbarRightText" xml:space="preserve"><value>Right</value></data>
+  <data name="MenuSettingsAbout.Text" xml:space="preserve"><value>About MyDraw</value></data>
+  <data name="AboutTitle" xml:space="preserve"><value>About</value></data>
+  <data name="AboutVersionFormat" xml:space="preserve"><value>Version: {0}&#10;File version: {1}</value></data>
+  <data name="AboutLicense" xml:space="preserve"><value>This application is released under the MIT License. Third-party packages are provided under their respective licenses.</value></data>
+  <data name="AboutPrivacy" xml:space="preserve"><value>Drawings and settings are stored locally. This application does not upload drawings to a server.</value></data>
+  <data name="FileAssociationTitle" xml:space="preserve"><value>File Association</value></data>
+  <data name="FileAssociationStatusRegistered" xml:space="preserve"><value>The .mydraw file type is currently associated with MyDraw.</value></data>
+  <data name="FileAssociationStatusUnregistered" xml:space="preserve"><value>The .mydraw file type is not associated with MyDraw.</value></data>
+  <data name="FileAssociationDescription" xml:space="preserve"><value>When associated, double-clicking a .mydraw file opens it in MyDraw. This changes settings for the current user only and does not require administrator rights.</value></data>
+  <data name="RegisterAssociationButton" xml:space="preserve"><value>Associate</value></data>
+  <data name="RemoveAssociationButton" xml:space="preserve"><value>Remove Association</value></data>
+  <data name="FileAssociationSuccessTitle" xml:space="preserve"><value>File Association</value></data>
+  <data name="FileAssociationSuccessMessage" xml:space="preserve"><value>The .mydraw file association was updated.</value></data>
+  <data name="FileAssociationFailedTitle" xml:space="preserve"><value>Unable to Update File Association</value></data>
+</root>
+
+

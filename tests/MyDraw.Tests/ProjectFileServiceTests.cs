@@ -70,6 +70,49 @@ public sealed class ProjectFileServiceTests
     }
 
     [Fact]
+    public async Task SaveAsync_CreatesBackupAndIncludesCurrentStroke()
+    {
+        string path = Path.Combine(Path.GetTempPath(), $"mydraw-{Guid.NewGuid():N}.mydraw");
+        try
+        {
+            DrawingDocument document = new();
+            document.AddLayer("Background");
+            DrawingLayer layer = document.SelectedLayer!;
+            ProjectFileService service = new();
+            await service.SaveAsync(document, path);
+
+            DrawingStroke currentStroke = new(
+                DrawingTool.Pen,
+                Color.FromArgb(255, 10, 20, 30),
+                6,
+                1,
+                true,
+                false)
+            {
+                LayerId = layer.Id
+            };
+            currentStroke.Points.Add(new StrokePoint(new Vector2(10, 10), 1, 0, 0));
+            document.BeginStroke(currentStroke);
+
+            await service.SaveAsync(document, path, currentStroke);
+
+            Assert.True(File.Exists($"{path}.bak"));
+            ProjectLoadResult current = await service.LoadAsync(path);
+            Assert.Single(current.Strokes);
+            ProjectLoadResult backup = await service.LoadAsync($"{path}.bak");
+            Assert.Empty(backup.Strokes);
+        }
+        finally
+        {
+            File.Delete(path);
+            if (File.Exists($"{path}.bak"))
+            {
+                File.Delete($"{path}.bak");
+            }
+        }
+    }
+
+    [Fact]
     public async Task Load_WithInvalidFile_ThrowsInvalidDataException()
     {
         string path = Path.Combine(Path.GetTempPath(), $"mydraw-{Guid.NewGuid():N}.mydraw");
@@ -77,7 +120,7 @@ public sealed class ProjectFileServiceTests
         try
         {
             ProjectFileService service = new();
-            await Assert.ThrowsAsync<InvalidDataException>(() => service.LoadAsync(path));
+            await Assert.ThrowsAsync<ProjectFileException>(() => service.LoadAsync(path));
         }
         finally
         {
@@ -85,3 +128,4 @@ public sealed class ProjectFileServiceTests
         }
     }
 }
+

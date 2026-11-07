@@ -5,9 +5,12 @@ namespace Com.StudentTools.MyDraw.Services;
 
 public sealed class DrawingDocument
 {
+    private static readonly object EmptyHistoryState = new();
     private readonly List<DrawingStroke> _strokes = [];
     private readonly Stack<HistoryEntry> _undo = new();
     private readonly Stack<HistoryEntry> _redo = new();
+    private object _savedState = EmptyHistoryState;
+    private bool _forceModified;
 
     public ObservableCollection<DrawingLayer> Layers { get; } = [];
 
@@ -19,7 +22,22 @@ public sealed class DrawingDocument
         AttachLayer(layer);
         Layers.Insert(0, layer);
         SelectedLayer = layer;
-        if (markModified) Touch();
+        if (markModified)
+        {
+            PushHistory(new HistoryEntry(
+                () =>
+                {
+                    _strokes.RemoveAll(stroke => stroke.LayerId == layer.Id);
+                    Layers.Remove(layer);
+                    SelectedLayer = Layers.FirstOrDefault();
+                },
+                () =>
+                {
+                    Layers.Insert(0, layer);
+                    SelectedLayer = layer;
+                }));
+            Touch();
+        }
     }
 
     public void Load(
@@ -27,7 +45,7 @@ public sealed class DrawingDocument
         int height,
         IReadOnlyList<DrawingLayer> layers,
         IReadOnlyList<DrawingStroke> strokes,
-        string filePath)
+        string? filePath)
     {
         if (layers.Count == 0)
         {
@@ -50,7 +68,8 @@ public sealed class DrawingDocument
         _strokes.AddRange(strokes);
         SelectedLayer = Layers[0];
         FilePath = filePath;
-        IsModified = false;
+        _savedState = EmptyHistoryState;
+        _forceModified = false;
         StrokeVersion++;
         OnChanged();
     }
@@ -61,12 +80,29 @@ public sealed class DrawingDocument
     public void DeleteSelectedLayer()
     {
         if (SelectedLayer is null || Layers.Count <= 1) return;
-        Guid id = SelectedLayer.Id;
-        Layers.Remove(SelectedLayer);
-        _strokes.RemoveAll(stroke => stroke.LayerId == id);
-        _undo.Clear();
-        _redo.Clear();
+        DrawingLayer layer = SelectedLayer;
+        int index = Layers.IndexOf(layer);
+        List<DrawingStroke> removedStrokes = _strokes
+            .Where(stroke => stroke.LayerId == layer.Id)
+            .ToList();
+        Layers.Remove(layer);
+        _strokes.RemoveAll(stroke => stroke.LayerId == layer.Id);
         SelectedLayer = Layers[0];
+        PushHistory(new HistoryEntry(
+            () =>
+            {
+                Layers.Insert(index, layer);
+                _strokes.AddRange(removedStrokes);
+                SelectedLayer = layer;
+                StrokeVersion++;
+            },
+            () =>
+            {
+                _strokes.RemoveAll(stroke => stroke.LayerId == layer.Id);
+                Layers.Remove(layer);
+                SelectedLayer = Layers[0];
+                StrokeVersion++;
+            }));
         StrokeVersion++;
         Touch();
     }
@@ -77,15 +113,29 @@ public sealed class DrawingDocument
         int index = Layers.IndexOf(SelectedLayer);
         int destination = index + direction;
         if (destination < 0 || destination >= Layers.Count) return;
+        DrawingLayer layer = SelectedLayer;
         Layers.Move(index, destination);
+        PushHistory(new HistoryEntry(
+            () =>
+            {
+                Layers.Move(destination, index);
+                SelectedLayer = layer;
+            },
+            () =>
+            {
+                Layers.Move(index, destination);
+                SelectedLayer = layer;
+            }));
         Touch();
     }
 
-    private void Touch()
+    private void PushHistory(HistoryEntry entry)
     {
-        IsModified = true;
-        OnChanged();
+        _undo.Push(entry);
+        _redo.Clear();
     }
+
+    private void Touch() => OnChanged();
 
     public CanvasDefinition Canvas { get; } = new();
 
@@ -101,11 +151,16 @@ public sealed class DrawingDocument
 
     public string? FilePath { get; private set; }
 
-    public bool IsModified { get; private set; }
-
     public bool CanUndo => _undo.Count > 0;
 
     public bool CanRedo => _redo.Count > 0;
+
+    public bool IsModified =>
+        _forceModified ||
+        CurrentStroke is not null ||
+        !ReferenceEquals(_savedState, CurrentHistoryState);
+
+    private object CurrentHistoryState => _undo.Count == 0 ? EmptyHistoryState : _undo.Peek();
 
     public void BeginStroke(DrawingStroke stroke)
     {
@@ -113,7 +168,6 @@ public sealed class DrawingDocument
         stroke.LayerId = SelectedLayer.Id;
         CurrentStroke = stroke;
         _redo.Clear();
-        IsModified = true;
         OnChanged();
     }
 
@@ -145,7 +199,7 @@ public sealed class DrawingDocument
         {
             DrawingStroke stroke = CurrentStroke;
             _strokes.Add(stroke);
-            _undo.Push(new HistoryEntry(() => _strokes.Remove(stroke), () => _strokes.Add(stroke)));
+            PushHistory(new HistoryEntry(() => _strokes.Remove(stroke), () => _strokes.Add(stroke)));
             StrokeVersion++;
         }
 
@@ -155,6 +209,11 @@ public sealed class DrawingDocument
 
     public void Undo()
     {
+        if (CurrentStroke is not null)
+        {
+            EndStroke();
+        }
+
         if (!_undo.TryPop(out HistoryEntry? entry))
         {
             return;
@@ -163,12 +222,16 @@ public sealed class DrawingDocument
         entry.Undo();
         _redo.Push(entry);
         StrokeVersion++;
-        IsModified = true;
         OnChanged();
     }
 
     public void Redo()
     {
+        if (CurrentStroke is not null)
+        {
+            EndStroke();
+        }
+
         if (!_redo.TryPop(out HistoryEntry? entry))
         {
             return;
@@ -177,7 +240,6 @@ public sealed class DrawingDocument
         entry.Redo();
         _undo.Push(entry);
         StrokeVersion++;
-        IsModified = true;
         OnChanged();
     }
 
@@ -189,7 +251,12 @@ public sealed class DrawingDocument
         }
 
         Canvas.Resize(width, height);
-        IsModified = true;
+        MarkModified();
+    }
+
+    public void MarkModified()
+    {
+        _forceModified = true;
         OnChanged();
     }
 
@@ -198,7 +265,8 @@ public sealed class DrawingDocument
         FilePath = filePath;
         if (clearModified)
         {
-            IsModified = false;
+            _savedState = CurrentHistoryState;
+            _forceModified = false;
         }
 
         OnChanged();
@@ -215,7 +283,8 @@ public sealed class DrawingDocument
         Canvas.Resize(width, height);
         AddLayer(defaultLayerName, false);
         StrokeVersion++;
-        IsModified = false;
+        _savedState = EmptyHistoryState;
+        _forceModified = false;
         OnChanged();
     }
 

@@ -23,8 +23,6 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.Windows.ApplicationModel.Resources;
 using Windows.Foundation;
 using Windows.Graphics;
-using Windows.Storage;
-using Windows.Storage.Pickers;
 using Windows.System;
 using Windows.UI;
 using Windows.UI.Core;
@@ -42,7 +40,9 @@ public sealed partial class MainWindow : Window
     private readonly LiveStrokeCache _liveStrokeCache = new();
     private readonly DrawingDocument _document;
     private readonly FileAssociationService _fileAssociationService;
+    private readonly FilePickerService _filePickerService;
     private readonly IProjectFileService _projectFileService;
+    private readonly RecoveryService _recoveryService;
     private readonly ResourceLoader _resourceLoader = new();
     private readonly ISettingsService _settingsService;
     private readonly ThemeService _themeService;
@@ -81,7 +81,9 @@ public sealed partial class MainWindow : Window
         ISettingsService settingsService,
         ThemeService themeService,
         FileAssociationService fileAssociationService,
+        FilePickerService filePickerService,
         IProjectFileService projectFileService,
+        RecoveryService recoveryService,
         ILogger<MainWindow> logger)
     {
         ViewModel = viewModel;
@@ -90,7 +92,9 @@ public sealed partial class MainWindow : Window
         _settingsService = settingsService;
         _themeService = themeService;
         _fileAssociationService = fileAssociationService;
+        _filePickerService = filePickerService;
         _projectFileService = projectFileService;
+        _recoveryService = recoveryService;
         _logger = logger;
 
         InitializeComponent();
@@ -157,6 +161,146 @@ public sealed partial class MainWindow : Window
 
         _pendingProjectPath = null;
         _ = OpenProjectFromPathAsync(filePath);
+    }
+
+    private async Task InitializeStartupAsync()
+    {
+        await RecoverIfAvailableAsync();
+        ProcessPendingProject();
+    }
+
+    private async Task RecoverIfAvailableAsync()
+    {
+        _recoveryService.CleanupExpired();
+        RecoveryInfo? recovery = _recoveryService.GetLatestRecovery();
+        if (recovery is null)
+        {
+            StartRecovery();
+            return;
+        }
+
+        string fileName = recovery.OriginalPath is null
+            ? _resourceLoader.GetString("UntitledFileName")
+            : Path.GetFileName(recovery.OriginalPath);
+        string message = string.Format(
+            _resourceLoader.GetString("RecoveryMessage"),
+            fileName,
+            recovery.SavedAt.LocalDateTime.ToString("g"));
+        ContentDialog dialog = CreateDialog(
+            _resourceLoader.GetString("RecoveryTitle"),
+            new TextBlock { Text = message, TextWrapping = TextWrapping.Wrap },
+            _resourceLoader.GetString("RecoverButton"));
+        dialog.SecondaryButtonText = _resourceLoader.GetString("DiscardRecoveryButton");
+        AutomationProperties.SetAutomationId(dialog, "RecoveryDialog");
+        ContentDialogResult result = await ShowDialogAsync(dialog);
+        if (result == ContentDialogResult.Primary)
+        {
+            try
+            {
+                ProjectLoadResult loaded = await _projectFileService.LoadAsync(recovery.RecoveryPath);
+                _document.Load(
+                    loaded.Width,
+                    loaded.Height,
+                    loaded.Layers,
+                    loaded.Strokes,
+                    recovery.OriginalPath);
+                _document.MarkModified();
+                LayerList.SelectedItem = _document.SelectedLayer;
+                if (recovery.OriginalPath is not null)
+                {
+                    ViewModel.AddRecentProject(recovery.OriginalPath);
+                }
+
+                _recoveryService.Delete(recovery);
+                FitCanvasToViewport();
+                RefreshRecentProjectsMenu();
+            }
+            catch (Exception exception) when (exception is
+                IOException or
+                UnauthorizedAccessException or
+                InvalidDataException or
+                ProjectFileException or
+                JsonException or
+                NotSupportedException or
+                ArgumentException)
+            {
+                _logger.LogError(exception, "Unable to restore recovery snapshot.");
+                await ShowErrorAsync(
+                    _resourceLoader.GetString("OpenFailedTitle"),
+                    GetLocalizedErrorMessage(exception),
+                    "OpenFailedDialog");
+            }
+        }
+        else if (result == ContentDialogResult.Secondary)
+        {
+            _recoveryService.Delete(recovery);
+        }
+
+        StartRecovery();
+    }
+
+    private void StartRecovery() =>
+        _recoveryService.Start(
+            _document,
+            DispatcherQueue,
+            () => _document.CurrentStroke);
+
+    private void RestartRecovery()
+    {
+        _recoveryService.Clear();
+        StartRecovery();
+    }
+
+    private void RefreshRecentProjectsMenu()
+    {
+        RecentProjectsMenu.Items.Clear();
+        ViewModel.PruneMissingRecentProjects();
+        IReadOnlyList<string> recentProjects = ViewModel.RecentProjects;
+        if (recentProjects.Count == 0)
+        {
+            RecentProjectsMenu.Items.Add(new MenuFlyoutItem
+            {
+                Text = _resourceLoader.GetString("MenuFileNoRecent/Text"),
+                IsEnabled = false
+            });
+            return;
+        }
+
+        int index = 0;
+        foreach (string filePath in recentProjects.ToList())
+        {
+            MenuFlyoutItem item = new()
+            {
+                Text = Path.GetFileName(filePath),
+                Tag = filePath
+            };
+            ToolTipService.SetToolTip(item, filePath);
+            AutomationProperties.SetAutomationId(item, $"RecentProject{index++}");
+            item.Click += RecentProjectMenuItem_Click;
+            RecentProjectsMenu.Items.Add(item);
+        }
+
+        RecentProjectsMenu.Items.Add(new MenuFlyoutSeparator());
+        MenuFlyoutItem clearItem = new()
+        {
+            Text = _resourceLoader.GetString("MenuFileClearRecent/Text")
+        };
+        clearItem.Click += ClearRecentProjectsMenuItem_Click;
+        RecentProjectsMenu.Items.Add(clearItem);
+    }
+
+    private void RecentProjectMenuItem_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuFlyoutItem { Tag: string filePath })
+        {
+            _ = OpenProjectFromPathAsync(filePath);
+        }
+    }
+
+    private void ClearRecentProjectsMenuItem_Click(object sender, RoutedEventArgs e)
+    {
+        ViewModel.ClearRecentProjects();
+        RefreshRecentProjectsMenu();
     }
 
     private Vector2 CanvasSize => new(_document.Canvas.Width, _document.Canvas.Height);
@@ -243,7 +387,7 @@ public sealed partial class MainWindow : Window
         if (_cacheDevice is null || !_cacheDevice.Equals(device))
         {
             DisposeLayerCaches();
-            _cacheDevice = device;
+            AttachDevice(device);
             _syncedStrokeVersion = -1;
         }
 
@@ -342,12 +486,39 @@ public sealed partial class MainWindow : Window
 
         _layerCaches.Clear();
         CanvasDevice? previousDevice = _cacheDevice;
+        if (previousDevice is not null)
+        {
+            previousDevice.DeviceLost -= CacheDevice_DeviceLost;
+        }
+
         _cacheDevice = null;
         _renderDpi = 96f;
         if (previousDevice is not null)
         {
             BrushRenderer.ResetTips(previousDevice);
         }
+    }
+
+    private void AttachDevice(CanvasDevice device)
+    {
+        if (_cacheDevice is not null)
+        {
+            _cacheDevice.DeviceLost -= CacheDevice_DeviceLost;
+        }
+
+        _cacheDevice = device;
+        device.DeviceLost += CacheDevice_DeviceLost;
+    }
+
+    private void CacheDevice_DeviceLost(CanvasDevice sender, object args) =>
+        DispatcherQueue.TryEnqueue(HandleDeviceLost);
+
+    private void HandleDeviceLost()
+    {
+        DisposeLayerCaches();
+        _syncedStrokeVersion = -1;
+        DrawingCanvas.Invalidate();
+        OverlayCanvas.Invalidate();
     }
 
     private void DrawGrid(CanvasDrawingSession drawingSession)
@@ -939,6 +1110,7 @@ public sealed partial class MainWindow : Window
 
         _document.Reset(_resourceLoader.GetString("DefaultLayerName/Text"));
         LayerList.SelectedItem = _document.SelectedLayer;
+        RestartRecovery();
         FitCanvasToViewport();
     }
 
@@ -953,15 +1125,13 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        FileOpenPicker picker = CreateOpenPicker();
-        picker.FileTypeFilter.Add(".mydraw");
-        StorageFile? file = await picker.PickSingleFileAsync();
-        if (file is null)
+        string? filePath = await _filePickerService.PickOpenProjectAsync(this);
+        if (filePath is null)
         {
             return;
         }
 
-        await LoadProjectFromPathAsync(file.Path);
+        await LoadProjectFromPathAsync(filePath);
     }
 
     private async Task OpenProjectFromPathAsync(string filePath)
@@ -987,12 +1157,16 @@ public sealed partial class MainWindow : Window
                 result.Strokes,
                 filePath);
             LayerList.SelectedItem = _document.SelectedLayer;
+            ViewModel.AddRecentProject(filePath);
+            RefreshRecentProjectsMenu();
+            RestartRecovery();
             FitCanvasToViewport();
         }
         catch (Exception exception) when (exception is
             IOException or
             UnauthorizedAccessException or
             InvalidDataException or
+            ProjectFileException or
             JsonException or
             NotSupportedException or
             ArgumentException)
@@ -1000,18 +1174,11 @@ public sealed partial class MainWindow : Window
             _logger.LogError(exception, "Unable to open project.");
             await ShowErrorAsync(
                 _resourceLoader.GetString("OpenFailedTitle"),
-                exception.Message,
+                GetLocalizedErrorMessage(exception),
                 "OpenFailedDialog");
         }
     }
 
-    private FileOpenPicker CreateOpenPicker()
-    {
-        FileOpenPicker picker = new();
-        nint windowHandle = WinRT.Interop.WindowNative.GetWindowHandle(this);
-        WinRT.Interop.InitializeWithWindow.Initialize(picker, windowHandle);
-        return picker;
-    }
 
     private async void CanvasSizeButton_Click(object sender, RoutedEventArgs e) => await ShowCanvasSizeDialogAsync();
 
@@ -1021,8 +1188,8 @@ public sealed partial class MainWindow : Window
         presets.Items.Add(_resourceLoader.GetString("CanvasPresetCurrent"));
         presets.Items.Add("1920 × 1080");
         presets.Items.Add("1080 × 1080");
-        presets.Items.Add("A4 直式 2480 × 3508");
-        presets.Items.Add("A4 橫式 3508 × 2480");
+        presets.Items.Add(_resourceLoader.GetString("CanvasPresetA4Portrait"));
+        presets.Items.Add(_resourceLoader.GetString("CanvasPresetA4Landscape"));
         presets.Items.Add(_resourceLoader.GetString("CanvasPresetCustom"));
 
         NumberBox widthBox = new()
@@ -1103,16 +1270,14 @@ public sealed partial class MainWindow : Window
         string? filePath = saveAs ? null : _document.FilePath;
         if (filePath is null)
         {
-            FileSavePicker picker = CreateSavePicker();
-            picker.SuggestedFileName = _resourceLoader.GetString("UntitledFileName");
-            picker.FileTypeChoices.Add(_resourceLoader.GetString("ProjectFileType"), [".mydraw"]);
-            StorageFile? file = await picker.PickSaveFileAsync();
-            if (file is null)
+            filePath = await _filePickerService.PickSaveProjectAsync(
+                this,
+                _resourceLoader.GetString("UntitledFileName"),
+                _resourceLoader.GetString("ProjectFileType"));
+            if (filePath is null)
             {
                 return false;
             }
-
-            filePath = file.Path;
         }
 
         try
@@ -1120,6 +1285,9 @@ public sealed partial class MainWindow : Window
             int strokeVersion = _document.StrokeVersion;
             await _projectFileService.SaveAsync(_document, filePath);
             _document.MarkSaved(filePath, strokeVersion == _document.StrokeVersion);
+            ViewModel.AddRecentProject(filePath);
+            RefreshRecentProjectsMenu();
+            RestartRecovery();
             return true;
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
@@ -1137,16 +1305,63 @@ public sealed partial class MainWindow : Window
 
     private async Task ExportPngAsync()
     {
-        FileSavePicker picker = CreateSavePicker();
-        picker.SuggestedFileName = _resourceLoader.GetString("UntitledFileName");
-        picker.FileTypeChoices.Add("PNG", [".png"]);
-        StorageFile? file = await picker.PickSaveFileAsync();
-        if (file is null)
+        string? exportPath = await _filePickerService.PickExportPngAsync(
+            this,
+            _resourceLoader.GetString("UntitledFileName"));
+        if (exportPath is null)
         {
             return;
         }
 
         ExportSnapshot snapshot = CreateExportSnapshot();
+        ProgressBar progressBar = new() { Minimum = 0, Maximum = 100 };
+        AutomationProperties.SetAutomationId(progressBar, "ExportProgressBar");
+        TextBlock progressText = new()
+        {
+            Text = string.Format(_resourceLoader.GetString("ExportProgressMessage"), 0)
+        };
+        ContentDialog progressDialog = new()
+        {
+            XamlRoot = RootLayout.XamlRoot,
+            RequestedTheme = RootLayout.ActualTheme,
+            Title = _resourceLoader.GetString("ExportProgressTitle"),
+            Content = new StackPanel
+            {
+                Spacing = 12,
+                Children = { progressText, progressBar }
+            },
+            CloseButtonText = _resourceLoader.GetString("CancelButton")
+        };
+        AutomationProperties.SetAutomationId(progressDialog, "ExportProgressDialog");
+        CancellationTokenSource cancellation = new();
+        bool exportCompleted = false;
+        progressDialog.CloseButtonClick += (_, _) => cancellation.Cancel();
+        progressDialog.Closing += (_, _) =>
+        {
+            if (!exportCompleted)
+            {
+                cancellation.Cancel();
+            }
+        };
+        Progress<double> progress = new(value =>
+        {
+            progressBar.Value = value;
+            progressText.Text = string.Format(
+                _resourceLoader.GetString("ExportProgressMessage"),
+                value);
+        });
+        Task<ContentDialogResult> dialogTask;
+        try
+        {
+            dialogTask = progressDialog.ShowAsync().AsTask();
+        }
+        catch (Exception exception) when (exception is
+            InvalidOperationException or System.Runtime.InteropServices.COMException)
+        {
+            await Task.Delay(150);
+            dialogTask = progressDialog.ShowAsync().AsTask();
+        }
+
         try
         {
             Task exportTask = Task.Run(async () =>
@@ -1159,28 +1374,70 @@ public sealed partial class MainWindow : Window
                     96);
                 using (CanvasDrawingSession drawingSession = renderTarget.CreateDrawingSession())
                 {
-                    RenderExport(drawingSession, snapshot);
+                    RenderExport(drawingSession, snapshot, progress, cancellation.Token);
                 }
 
-                await renderTarget.SaveAsync(file.Path, CanvasBitmapFileFormat.Png);
+                cancellation.Token.ThrowIfCancellationRequested();
+                await renderTarget.SaveAsync(exportPath, CanvasBitmapFileFormat.Png);
+                if (cancellation.Token.IsCancellationRequested)
+                {
+                    File.Delete(exportPath);
+                    cancellation.Token.ThrowIfCancellationRequested();
+                }
+
+                ((IProgress<double>)progress).Report(100);
             });
             _activeExport = exportTask;
             try
             {
                 await exportTask;
+                exportCompleted = true;
             }
             finally
             {
                 _activeExport = null;
             }
         }
-        catch (Exception exception) when (exception is not OperationCanceledException)
+        catch (OperationCanceledException)
+        {
+            TryDeleteExportFile(exportPath);
+        }
+        catch (Exception exception)
         {
             _logger.LogError(exception, "Unable to export PNG.");
             await ShowErrorAsync(
                 _resourceLoader.GetString("ExportFailedTitle"),
                 exception.Message,
                 "ExportFailedDialog");
+        }
+        finally
+        {
+            progressDialog.Hide();
+            try
+            {
+                await dialogTask;
+            }
+            catch (Exception exception) when (exception is InvalidOperationException or TaskCanceledException)
+            {
+                _logger.LogDebug(exception, "Export progress dialog closed.");
+            }
+
+            cancellation.Dispose();
+        }
+    }
+
+    private void TryDeleteExportFile(string filePath)
+    {
+        try
+        {
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            _logger.LogWarning(exception, "Unable to remove cancelled export file.");
         }
     }
 
@@ -1220,8 +1477,13 @@ public sealed partial class MainWindow : Window
             strokesByLayer);
     }
 
-    private static void RenderExport(CanvasDrawingSession drawingSession, ExportSnapshot snapshot)
+    private static void RenderExport(
+        CanvasDrawingSession drawingSession,
+        ExportSnapshot snapshot,
+        IProgress<double> progress,
+        CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         drawingSession.Clear(Colors.Transparent);
         using (CanvasActiveLayer paperLayer = drawingSession.CreateLayer(
             1,
@@ -1230,67 +1492,47 @@ public sealed partial class MainWindow : Window
             drawingSession.FillRectangle(0, 0, snapshot.Width, snapshot.Height, Colors.White);
         }
 
+        int completedLayers = 0;
+        int totalLayers = Math.Max(1, snapshot.Layers.Count);
         foreach (ExportLayer layer in snapshot.Layers)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (!layer.IsVisible || layer.Opacity <= 0)
             {
+                completedLayers++;
+                progress.Report(90.0 * completedLayers / totalLayers);
                 continue;
             }
 
-            if (!snapshot.StrokesByLayer.TryGetValue(layer.Id, out List<DrawingStroke>? strokes) ||
-                strokes.Count == 0)
+            if (snapshot.StrokesByLayer.TryGetValue(layer.Id, out List<DrawingStroke>? strokes) &&
+                strokes.Count > 0)
             {
-                continue;
+                if (layer.Opacity < 1)
+                {
+                    using CanvasActiveLayer opacityLayer = drawingSession.CreateLayer((float)layer.Opacity);
+                    DrawExportStrokes(drawingSession, strokes);
+                }
+                else
+                {
+                    DrawExportStrokes(drawingSession, strokes);
+                }
             }
 
-            if (layer.Opacity < 1)
-            {
-                using CanvasActiveLayer opacityLayer = drawingSession.CreateLayer((float)layer.Opacity);
-                DrawExportStrokes(drawingSession, strokes);
-            }
-            else
-            {
-                DrawExportStrokes(drawingSession, strokes);
-            }
+            completedLayers++;
+            progress.Report(90.0 * completedLayers / totalLayers);
         }
+
+        progress.Report(95);
     }
 
     private static void DrawExportStrokes(
         CanvasDrawingSession drawingSession,
         IReadOnlyList<DrawingStroke> strokes)
     {
-        bool hasHighlighter = false;
         foreach (DrawingStroke stroke in strokes)
         {
-            if (stroke.Tool == DrawingTool.Highlighter)
-            {
-                hasHighlighter = true;
-            }
-            else
-            {
-                BrushRenderer.Draw(drawingSession, stroke);
-            }
+            BrushRenderer.Draw(drawingSession, stroke);
         }
-
-        if (!hasHighlighter)
-        {
-            return;
-        }
-
-        using CanvasCommandList highlighter = new(drawingSession.Device);
-        using (CanvasDrawingSession highlighterSession = highlighter.CreateDrawingSession())
-        {
-            highlighterSession.Blend = CanvasBlend.Copy;
-            foreach (DrawingStroke stroke in strokes)
-            {
-                if (stroke.Tool == DrawingTool.Highlighter)
-                {
-                    BrushRenderer.Draw(highlighterSession, stroke);
-                }
-            }
-        }
-
-        drawingSession.DrawImage(highlighter);
     }
 
     private static DrawingStroke CloneStroke(DrawingStroke source)
@@ -1318,14 +1560,6 @@ public sealed partial class MainWindow : Window
         return clone;
     }
 
-    private FileSavePicker CreateSavePicker()
-    {
-        FileSavePicker picker = new();
-        nint windowHandle = WinRT.Interop.WindowNative.GetWindowHandle(this);
-        WinRT.Interop.InitializeWithWindow.Initialize(picker, windowHandle);
-        return picker;
-    }
-
     private async void SettingsButton_Click(object sender, RoutedEventArgs e) => await ShowSettingsDialogAsync();
 
     private async void FileAssociationMenuItem_Click(object sender, RoutedEventArgs e) =>
@@ -1344,7 +1578,7 @@ public sealed partial class MainWindow : Window
             _logger.LogError(exception, "Unable to read file association state.");
             await ShowErrorAsync(
                 _resourceLoader.GetString("FileAssociationFailedTitle"),
-                exception.Message,
+                _resourceLoader.GetString("FileAssociationFailedMessage"),
                 "FileAssociationFailedDialog");
             return;
         }
@@ -1397,7 +1631,7 @@ public sealed partial class MainWindow : Window
             _logger.LogError(exception, "Unable to update file association.");
             await ShowErrorAsync(
                 _resourceLoader.GetString("FileAssociationFailedTitle"),
-                exception.Message,
+                _resourceLoader.GetString("FileAssociationFailedMessage"),
                 "FileAssociationFailedDialog");
         }
     }
@@ -1453,7 +1687,7 @@ public sealed partial class MainWindow : Window
             _resourceLoader.GetString("SettingsTitle"),
             content,
             _resourceLoader.GetString("ApplyButton"));
-        Microsoft.UI.Xaml.Automation.AutomationProperties.SetAutomationId(dialog, "AppearanceSettingsDialog");
+        AutomationProperties.SetAutomationId(dialog, "AppearanceSettingsDialog");
         if (await ShowDialogAsync(dialog) == ContentDialogResult.Primary &&
             modeBox.SelectedItem is ComboBoxItem { Tag: DisplayMode displayMode } &&
             themeBox.SelectedItem is ComboBoxItem { Tag: ColorTheme colorTheme })
@@ -1602,6 +1836,40 @@ public sealed partial class MainWindow : Window
         SetImmersive(_isFullScreen);
     }
 
+    private void UndoAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    {
+        if (!CanUseHistoryShortcut())
+        {
+            return;
+        }
+
+        if (ViewModel.UndoCommand.CanExecute(null))
+        {
+            ViewModel.UndoCommand.Execute(null);
+        }
+
+        args.Handled = true;
+    }
+
+    private void RedoAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    {
+        if (!CanUseHistoryShortcut())
+        {
+            return;
+        }
+
+        if (ViewModel.RedoCommand.CanExecute(null))
+        {
+            ViewModel.RedoCommand.Execute(null);
+        }
+
+        args.Handled = true;
+    }
+
+    private bool CanUseHistoryShortcut() =>
+        !_isDialogOpen &&
+        FocusManager.GetFocusedElement(RootLayout.XamlRoot) is not (TextBox or NumberBox);
+
     private async void RootLayout_KeyDown(object sender, KeyRoutedEventArgs e)
     {
         if (_isDialogOpen)
@@ -1640,23 +1908,6 @@ public sealed partial class MainWindow : Window
                 case VirtualKey.E:
                     e.Handled = true;
                     await ExportPngAsync();
-                    return;
-                case VirtualKey.Z:
-                    if (!isTextInputFocused)
-                    {
-                        if (isShift) ViewModel.RedoCommand.Execute(null);
-                        else ViewModel.UndoCommand.Execute(null);
-                        e.Handled = true;
-                    }
-
-                    return;
-                case VirtualKey.Y:
-                    if (!isTextInputFocused)
-                    {
-                        ViewModel.RedoCommand.Execute(null);
-                        e.Handled = true;
-                    }
-
                     return;
                 case VirtualKey.G:
                     ViewModel.IsGridVisible = !ViewModel.IsGridVisible;
@@ -1794,9 +2045,10 @@ public sealed partial class MainWindow : Window
         AppSettings settings = _settingsService.Settings;
         _themeService.Apply(RootLayout, settings.DisplayMode, settings.ColorTheme);
         ApplyToolbarPosition();
-        ApplyToolSelection(DrawingTool.Pencil);
+        ApplyToolSelection(DrawingTool.Ballpoint);
         _isLoaded = true;
-        ProcessPendingProject();
+        RefreshRecentProjectsMenu();
+        _ = InitializeStartupAsync();
 
         if (settings.IsMaximized && AppWindow.Presenter is OverlappedPresenter presenter)
         {
@@ -1858,11 +2110,23 @@ public sealed partial class MainWindow : Window
         }
 
         args.Cancel = true;
-        if (await ConfirmDiscardOrSaveAsync(_resourceLoader.GetString("UnsavedMessage")))
+        _isCloseConfirmed = true;
+        _ = CloseAfterRecoveryAsync();
+    }
+
+    private async Task CloseAfterRecoveryAsync()
+    {
+        try
         {
-            _isCloseConfirmed = true;
-            Close();
+            await _recoveryService.SaveRecoveryAsync();
         }
+        catch (Exception exception) when (exception is
+            IOException or UnauthorizedAccessException or InvalidDataException)
+        {
+            _logger.LogWarning(exception, "Unable to write the final recovery snapshot.");
+        }
+
+        Close();
     }
 
     private async Task<bool> ConfirmDiscardOrSaveAsync(string message)
@@ -1972,6 +2236,11 @@ public sealed partial class MainWindow : Window
         }
     }
 
+    private string GetLocalizedErrorMessage(Exception exception) =>
+        exception is ProjectFileException projectException
+            ? _resourceLoader.GetString(projectException.ResourceKey)
+            : exception.Message;
+
     private async Task ShowErrorAsync(
         string title,
         string message,
@@ -2028,6 +2297,15 @@ public sealed partial class MainWindow : Window
         DrawingCanvas.SizeChanged -= DrawingCanvas_SizeChanged;
         DrawingCanvas.PointerEntered -= DrawingCanvas_PointerEntered;
         DrawingCanvas.PointerExited -= DrawingCanvas_PointerExited;
+        if (_document.IsModified)
+        {
+            _recoveryService.Stop();
+        }
+        else
+        {
+            _recoveryService.Clear();
+        }
+
         DisposeLayerCaches();
         _liveStrokeCache.Dispose();
         if (_activeExport is null || _activeExport.IsCompleted)
@@ -2047,3 +2325,5 @@ public sealed partial class MainWindow : Window
 
     private sealed record ExportLayer(Guid Id, bool IsVisible, double Opacity);
 }
+
+

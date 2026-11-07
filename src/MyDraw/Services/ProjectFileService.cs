@@ -2,6 +2,7 @@ using System.IO.Compression;
 using System.Numerics;
 using System.Text.Json;
 using Com.StudentTools.MyDraw.Models;
+using Microsoft.Windows.ApplicationModel.Resources;
 using Windows.UI;
 
 namespace Com.StudentTools.MyDraw.Services;
@@ -17,10 +18,14 @@ public sealed class ProjectFileService : IProjectFileService
     public Task SaveAsync(
         DrawingDocument document,
         string filePath,
+        DrawingStroke? currentStroke = null,
+        bool createBackup = true,
         CancellationToken cancellationToken = default)
     {
-        ProjectData snapshot = CreateSnapshot(document);
-        return Task.Run(() => SaveSnapshot(snapshot, filePath, cancellationToken), cancellationToken);
+        ProjectData snapshot = CreateSnapshot(document, currentStroke);
+        return Task.Run(
+            () => SaveSnapshot(snapshot, filePath, createBackup, cancellationToken),
+            cancellationToken);
     }
 
     public Task<ProjectLoadResult> LoadAsync(
@@ -28,9 +33,23 @@ public sealed class ProjectFileService : IProjectFileService
         CancellationToken cancellationToken = default) =>
         Task.Run(() => LoadSnapshot(filePath, cancellationToken), cancellationToken);
 
-    private static ProjectData CreateSnapshot(DrawingDocument document)
+    private static ProjectData CreateSnapshot(
+        DrawingDocument document,
+        DrawingStroke? currentStroke)
     {
-        List<StrokeData> strokes = document.Strokes.Select(stroke => new StrokeData(
+        List<StrokeData> strokes = document.Strokes.Select(stroke => CreateStrokeData(stroke)).ToList();
+        if (currentStroke is { Points.Count: > 0 })
+        {
+            strokes.Add(CreateStrokeData(CloneStroke(currentStroke)));
+        }
+
+        return new ProjectData(document.Canvas.Width, document.Canvas.Height,
+            document.Layers.Select(layer => new LayerData(layer.Id, layer.Name, layer.IsVisible, layer.IsLocked, layer.Opacity)).ToList(),
+            strokes);
+    }
+
+    private static StrokeData CreateStrokeData(DrawingStroke stroke) =>
+        new(
             stroke.LayerId,
             stroke.BrushId,
             stroke.Tool.ToString(),
@@ -48,15 +67,44 @@ public sealed class ProjectFileService : IProjectFileService
                 point.Position.Y,
                 point.Pressure,
                 point.TiltX,
-                point.TiltY)).ToList())).ToList();
+                point.TiltY)).ToList());
 
-        return new ProjectData(document.Canvas.Width, document.Canvas.Height,
-            document.Layers.Select(layer => new LayerData(layer.Id, layer.Name, layer.IsVisible, layer.IsLocked, layer.Opacity)).ToList(),
-            strokes);
+    private static DrawingStroke CloneStroke(DrawingStroke source)
+    {
+        DrawingStroke clone = new(
+            source.Tool,
+            source.Color,
+            source.Size,
+            source.Opacity,
+            source.UseSizePressure,
+            source.UseOpacityPressure,
+            source.BrushId,
+            source.TextureSeed,
+            source.Softness,
+            source.AirbrushMode,
+            source.Flow)
+        {
+            LayerId = source.LayerId
+        };
+        foreach (StrokePoint point in source.Points)
+        {
+            clone.Points.Add(point);
+        }
+
+        return clone;
     }
 
-    private static void SaveSnapshot(ProjectData snapshot, string filePath, CancellationToken cancellationToken)
+    private static void SaveSnapshot(
+        ProjectData snapshot,
+        string filePath,
+        bool createBackup,
+        CancellationToken cancellationToken)
     {
+        if (createBackup && File.Exists(filePath))
+        {
+            File.Copy(filePath, $"{filePath}.bak", overwrite: true);
+        }
+
         string temporaryPath = $"{filePath}.{Guid.NewGuid():N}.tmp";
         try
         {
@@ -83,37 +131,49 @@ public sealed class ProjectFileService : IProjectFileService
     {
         cancellationToken.ThrowIfCancellationRequested();
         using FileStream stream = File.OpenRead(filePath);
-        using ZipArchive archive = new(stream, ZipArchiveMode.Read);
-
-        ManifestData manifest = ReadJson<ManifestData>(archive, "manifest.json", cancellationToken)
-            ?? throw new InvalidDataException("The project manifest is missing or invalid.");
-        if (!string.Equals(manifest.Format, "MyDraw", StringComparison.Ordinal))
+        ZipArchive archive;
+        try
         {
-            throw new InvalidDataException("The file is not a MyDraw project.");
+            archive = new ZipArchive(stream, ZipArchiveMode.Read);
+        }
+        catch (InvalidDataException)
+        {
+            throw new ProjectFileException("ProjectErrorNotMyDraw");
         }
 
-        if (manifest.FormatVersion < 1 || manifest.FormatVersion > CurrentFormatVersion)
+        using (archive)
         {
-            throw new NotSupportedException(
-                $"Project format version {manifest.FormatVersion} is not supported.");
-        }
+            ManifestData manifest = ReadJson<ManifestData>(archive, "manifest.json", cancellationToken)
+            ?? throw new ProjectFileException("ProjectErrorManifestMissing");
+            if (!string.Equals(manifest.Format, "MyDraw", StringComparison.Ordinal))
+            {
+                throw new ProjectFileException("ProjectErrorNotMyDraw");
+            }
 
-        ProjectData document = ReadJson<ProjectData>(archive, "document.json", cancellationToken)
-            ?? throw new InvalidDataException("The project document is missing or invalid.");
-        if (document.Width is < 64 or > 8192 || document.Height is < 64 or > 8192)
-        {
-            throw new InvalidDataException("The project canvas size is invalid.");
-        }
+            if (manifest.FormatVersion < 1 || manifest.FormatVersion > CurrentFormatVersion)
+            {
+                throw new ProjectFileException(
+                    "ProjectErrorUnsupportedVersion",
+                    $"Project format version {manifest.FormatVersion} is not supported.");
+            }
 
-        if (document.Layers is null || document.Strokes is null)
-        {
-            throw new InvalidDataException("The project layers or strokes are missing.");
-        }
+            ProjectData document = ReadJson<ProjectData>(archive, "document.json", cancellationToken)
+                ?? throw new ProjectFileException("ProjectErrorDocumentMissing");
+            if (document.Width is < 64 or > 8192 || document.Height is < 64 or > 8192)
+            {
+                throw new ProjectFileException("ProjectErrorCanvasSize");
+            }
 
-        List<DrawingLayer> layers = LoadLayers(document.Layers);
-        HashSet<Guid> layerIds = layers.Select(layer => layer.Id).ToHashSet();
-        List<DrawingStroke> strokes = LoadStrokes(document.Strokes, layerIds);
-        return new ProjectLoadResult(document.Width, document.Height, layers, strokes);
+            if (document.Layers is null || document.Strokes is null)
+            {
+                throw new ProjectFileException("ProjectErrorLayersMissing");
+            }
+
+            List<DrawingLayer> layers = LoadLayers(document.Layers);
+            HashSet<Guid> layerIds = layers.Select(layer => layer.Id).ToHashSet();
+            List<DrawingStroke> strokes = LoadStrokes(document.Strokes, layerIds);
+            return new ProjectLoadResult(document.Width, document.Height, layers, strokes);
+        }
     }
 
     private static List<DrawingLayer> LoadLayers(IReadOnlyList<LayerData> source)
@@ -128,7 +188,10 @@ public sealed class ProjectFileService : IProjectFileService
                 continue;
             }
 
-            layers.Add(new DrawingLayer(id, string.IsNullOrWhiteSpace(data.Name) ? "Layer" : data.Name)
+            string layerName = string.IsNullOrWhiteSpace(data.Name)
+                ? new ResourceLoader().GetString("DefaultLoadedLayerName")
+                : data.Name;
+            layers.Add(new DrawingLayer(id, layerName)
             {
                 IsVisible = data.IsVisible,
                 IsLocked = data.IsLocked,
@@ -138,7 +201,7 @@ public sealed class ProjectFileService : IProjectFileService
 
         if (layers.Count == 0)
         {
-            throw new InvalidDataException("The project does not contain any layers.");
+            throw new ProjectFileException("ProjectErrorNoLayers");
         }
 
         return layers;
@@ -203,7 +266,9 @@ public sealed class ProjectFileService : IProjectFileService
         ZipArchiveEntry? entry = archive.GetEntry(entryName);
         if (entry is null)
         {
-            throw new InvalidDataException($"The project is missing {entryName}.");
+            throw new ProjectFileException(
+                "ProjectErrorMissingEntry",
+                $"The project is missing {entryName}.");
         }
 
         using Stream entryStream = entry.Open();

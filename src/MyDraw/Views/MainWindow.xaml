@@ -14,6 +14,11 @@
         IsTabStop="True"
         KeyDown="RootLayout_KeyDown"
         KeyUp="RootLayout_KeyUp">
+        <Grid.KeyboardAccelerators>
+            <KeyboardAccelerator Key="Z" Modifiers="Control" Invoked="UndoAccelerator_Invoked" />
+            <KeyboardAccelerator Key="Y" Modifiers="Control" Invoked="RedoAccelerator_Invoked" />
+            <KeyboardAccelerator Key="Z" Modifiers="Control,Shift" Invoked="RedoAccelerator_Invoked" />
+        </Grid.KeyboardAccelerators>
         <Grid.RowDefinitions>
             <RowDefinition x:Name="TopBarRow" Height="40" />
             <RowDefinition Height="*" />
@@ -65,16 +70,21 @@
                             AutomationProperties.AutomationId="ExportPngMenuItem"
                             Click="ExportButton_Click"
                             KeyboardAcceleratorTextOverride="Ctrl+E" />
+                        <MenuFlyoutSeparator />
+                        <MenuFlyoutSubItem
+                            x:Name="RecentProjectsMenu"
+                            x:Uid="MenuFileRecent"
+                            AutomationProperties.AutomationId="RecentProjectsMenu" />
                     </MenuBarItem>
 
                     <MenuBarItem x:Uid="EditMenu" AutomationProperties.AutomationId="EditMenuBarItem">
                         <MenuFlyoutItem
                             x:Uid="MenuEditUndo"
-                            Command="{Binding UndoCommand}"
+                            Command="{x:Bind ViewModel.UndoCommand}"
                             KeyboardAcceleratorTextOverride="Ctrl+Z" />
                         <MenuFlyoutItem
                             x:Uid="MenuEditRedo"
-                            Command="{Binding RedoCommand}"
+                            Command="{x:Bind ViewModel.RedoCommand}"
                             KeyboardAcceleratorTextOverride="Ctrl+Y" />
                     </MenuBarItem>
 
@@ -141,6 +151,7 @@
                         CornerRadius="8">
                         <TextBlock
                             x:Name="ActiveToolStatusText"
+                            AutomationProperties.LiveSetting="Polite"
                             VerticalAlignment="Center"
                             Style="{ThemeResource CaptionTextBlockStyle}" />
                     </Border>
@@ -189,7 +200,36 @@
 
                     <Rectangle Height="1" Margin="8,4" Fill="{ThemeResource PanelBorderBrush}" />
 
-                    <!-- 常用第一層畫筆：鉛筆、原子筆、螢光筆 -->
+                    <!-- 常用第一層畫筆：原子筆、鉛筆、螢光筆 -->
+                    <Button
+                        x:Name="BallpointToolButton"
+                        x:Uid="BallpointTool"
+                        Click="ToolButton_Click"
+                        Style="{StaticResource ToolButtonStyle}"
+                        Tag="Ballpoint">
+                        <Viewbox Width="20" Height="20">
+                            <Canvas Width="24" Height="24">
+                                <Path
+                                    Data="M 9.5,3 H 14.5 V 12.5 L 12,18.5 L 9.5,12.5 Z"
+                                    Stroke="{ThemeResource TextFillColorPrimaryBrush}"
+                                    StrokeLineJoin="Round"
+                                    StrokeThickness="1.8" />
+                                <Path
+                                    Data="M 14.5,5.5 H 17.5 V 10.5"
+                                    Stroke="{ThemeResource TextFillColorPrimaryBrush}"
+                                    StrokeEndLineCap="Round"
+                                    StrokeLineJoin="Round"
+                                    StrokeThickness="1.8" />
+                                <Ellipse
+                                    Canvas.Left="10.7"
+                                    Canvas.Top="18.8"
+                                    Width="2.6"
+                                    Height="2.6"
+                                    Fill="{ThemeResource TextFillColorPrimaryBrush}" />
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+
                     <Button
                         x:Name="PencilToolButton"
                         x:Uid="PencilTool"
@@ -217,35 +257,6 @@
                                     X2="8.5"
                                     Y1="15.5"
                                     Y2="19.5" />
-                            </Canvas>
-                        </Viewbox>
-                    </Button>
-
-                    <Button
-                        x:Name="BallpointToolButton"
-                        x:Uid="BallpointTool"
-                        Click="ToolButton_Click"
-                        Style="{StaticResource ToolButtonStyle}"
-                        Tag="Ballpoint">
-                        <Viewbox Width="20" Height="20">
-                            <Canvas Width="24" Height="24">
-                                <Path
-                                    Data="M 9.5,3 H 14.5 V 12.5 L 12,18.5 L 9.5,12.5 Z"
-                                    Stroke="{ThemeResource TextFillColorPrimaryBrush}"
-                                    StrokeLineJoin="Round"
-                                    StrokeThickness="1.8" />
-                                <Path
-                                    Data="M 14.5,5.5 H 17.5 V 10.5"
-                                    Stroke="{ThemeResource TextFillColorPrimaryBrush}"
-                                    StrokeEndLineCap="Round"
-                                    StrokeLineJoin="Round"
-                                    StrokeThickness="1.8" />
-                                <Ellipse
-                                    Canvas.Left="10.7"
-                                    Canvas.Top="18.8"
-                                    Width="2.6"
-                                    Height="2.6"
-                                    Fill="{ThemeResource TextFillColorPrimaryBrush}" />
                             </Canvas>
                         </Viewbox>
                     </Button>
@@ -614,30 +625,35 @@
                                                         </Grid.ColumnDefinitions>
                                                         <Button
                                                             Grid.Column="0"
+                                                            AutomationProperties.AutomationId="FavoriteApplyButton"
                                                             AutomationProperties.Name="{Binding Name}"
                                                             Click="ApplyFavoriteBrushButton_Click"
                                                             Content="{Binding Name}"
                                                             Style="{StaticResource SecondaryBrushButtonStyle}" />
                                                         <Button
                                                             x:Uid="MoveFavoriteBrushUpButton"
+                                                            AutomationProperties.AutomationId="FavoriteMoveUpButton"
                                                             Grid.Column="1"
                                                             Click="MoveFavoriteBrushUpButton_Click"
                                                             Content="&#xE70E;"
                                                             Style="{StaticResource CompactIconButtonStyle}" />
                                                         <Button
                                                             x:Uid="MoveFavoriteBrushDownButton"
+                                                            AutomationProperties.AutomationId="FavoriteMoveDownButton"
                                                             Grid.Column="2"
                                                             Click="MoveFavoriteBrushDownButton_Click"
                                                             Content="&#xE70D;"
                                                             Style="{StaticResource CompactIconButtonStyle}" />
                                                         <Button
                                                             x:Uid="RenameFavoriteBrushButton"
+                                                            AutomationProperties.AutomationId="FavoriteRenameButton"
                                                             Grid.Column="3"
                                                             Click="RenameFavoriteBrushButton_Click"
                                                             Content="&#xE70F;"
                                                             Style="{StaticResource CompactIconButtonStyle}" />
                                                         <Button
                                                             x:Uid="DeleteFavoriteBrushButton"
+                                                            AutomationProperties.AutomationId="FavoriteDeleteButton"
                                                             Grid.Column="4"
                                                             Click="DeleteFavoriteBrushButton_Click"
                                                             Content="&#xE74D;"
@@ -935,6 +951,7 @@
         <local:CursorGrid x:Name="CanvasWorkspace" Grid.Row="1" Grid.Column="1" Background="{ThemeResource WorkspaceBrush}">
             <canvas:CanvasControl
                 x:Name="DrawingCanvas"
+                x:Uid="DrawingCanvas"
                 Draw="DrawingCanvas_Draw"
                 PointerCaptureLost="DrawingCanvas_PointerCaptureLost"
                 PointerMoved="DrawingCanvas_PointerMoved"

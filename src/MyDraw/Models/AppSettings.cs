@@ -22,6 +22,8 @@ public sealed class AppSettings
 
     public bool IsToolbarOnRight { get; set; }
 
+    public List<string> RecentProjects { get; set; } = [];
+
     public List<BrushToolSettings> BrushToolSettings { get; set; } = [];
 
     public List<FavoriteBrush> FavoriteBrushes { get; set; } = [];

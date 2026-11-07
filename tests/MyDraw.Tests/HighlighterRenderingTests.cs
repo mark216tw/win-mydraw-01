@@ -11,7 +11,7 @@ namespace Com.StudentTools.MyDraw.Tests;
 public sealed class HighlighterRenderingTests
 {
     [Fact]
-    public void Highlighter_DrawnWithCopyBlend_ProducesYellowPixels()
+    public void Highlighter_DrawnInOrder_ProducesYellowPixels()
     {
         CanvasDevice device = CanvasDevice.GetSharedDevice();
         DrawingStroke stroke = new(
@@ -30,7 +30,6 @@ public sealed class HighlighterRenderingTests
         using (CanvasDrawingSession session = target.CreateDrawingSession())
         {
             session.Clear(Colors.Transparent);
-            session.Blend = CanvasBlend.Copy;
             BrushRenderer.Draw(session, stroke);
         }
 
@@ -41,3 +40,4 @@ public sealed class HighlighterRenderingTests
         Assert.True(center.G > center.B);
     }
 }
+

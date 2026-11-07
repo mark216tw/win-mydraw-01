@@ -14,6 +14,9 @@
   <data name="MenuFileSave.Text" xml:space="preserve"><value>儲存專案</value></data>
   <data name="MenuFileSaveAs.Text" xml:space="preserve"><value>另存專案…</value></data>
   <data name="MenuFileExport.Text" xml:space="preserve"><value>匯出 PNG 圖片…</value></data>
+  <data name="MenuFileRecent.Text" xml:space="preserve"><value>最近開啟</value></data>
+  <data name="MenuFileNoRecent.Text" xml:space="preserve"><value>尚無最近開啟的專案</value></data>
+  <data name="MenuFileClearRecent.Text" xml:space="preserve"><value>清除最近紀錄</value></data>
 
   <data name="EditMenu.Title" xml:space="preserve"><value>編輯</value></data>
   <data name="EditMenu.AutomationProperties.Name" xml:space="preserve"><value>編輯選單</value></data>
@@ -172,6 +175,7 @@
   <data name="AddLayerButton.ToolTipService.ToolTip" xml:space="preserve"><value>新增圖層</value></data>
   <data name="AddLayerButton.AutomationProperties.Name" xml:space="preserve"><value>新增圖層</value></data>
   <data name="DefaultLayerName.Text" xml:space="preserve"><value>繪圖層 1</value></data>
+  <data name="DefaultLoadedLayerName" xml:space="preserve"><value>圖層</value></data>
   <data name="NewLayerName" xml:space="preserve"><value>圖層 {0}</value></data>
   <data name="LayerNameEditor.Header" xml:space="preserve"><value>圖層名稱</value></data>
   <data name="LayerNameEditor.AutomationProperties.Name" xml:space="preserve"><value>圖層名稱</value></data>
@@ -191,6 +195,8 @@
 
   <!-- 畫布提示與對話框 -->
   <data name="CanvasHint.Text" xml:space="preserve"><value>滾輪縮放 · 右鍵 / 空白鍵平移</value></data>
+  <data name="DrawingCanvas.AutomationProperties.Name" xml:space="preserve"><value>繪圖畫布</value></data>
+  <data name="DrawingCanvas.AutomationProperties.HelpText" xml:space="preserve"><value>使用滑鼠、觸控或手寫筆繪圖；滾輪縮放，右鍵或空白鍵拖曳平移。</value></data>
   <data name="SettingsTitle" xml:space="preserve"><value>外觀與主題設定</value></data>
   <data name="DisplayModeHeader" xml:space="preserve"><value>顯示模式</value></data>
   <data name="SystemModeText" xml:space="preserve"><value>跟隨系統</value></data>
@@ -205,6 +211,8 @@
 
   <data name="CanvasPresetCurrent" xml:space="preserve"><value>目前大小</value></data>
   <data name="CanvasPresetCustom" xml:space="preserve"><value>自訂大小</value></data>
+  <data name="CanvasPresetA4Portrait" xml:space="preserve"><value>A4 直式 2480 × 3508</value></data>
+  <data name="CanvasPresetA4Landscape" xml:space="preserve"><value>A4 橫式 3508 × 2480</value></data>
   <data name="CanvasWidth" xml:space="preserve"><value>寬度（像素）</value></data>
   <data name="CanvasHeight" xml:space="preserve"><value>高度（像素）</value></data>
   <data name="CanvasDialogTitle" xml:space="preserve"><value>畫紙大小</value></data>
@@ -218,7 +226,22 @@
   <data name="ProjectFileType" xml:space="preserve"><value>MyDraw 專案</value></data>
   <data name="SaveFailedTitle" xml:space="preserve"><value>無法儲存專案</value></data>
   <data name="OpenFailedTitle" xml:space="preserve"><value>無法開啟專案</value></data>
+  <data name="ProjectErrorManifestMissing" xml:space="preserve"><value>專案缺少或無法讀取 manifest.json。</value></data>
+  <data name="ProjectErrorNotMyDraw" xml:space="preserve"><value>這個檔案不是 MyDraw 專案。</value></data>
+  <data name="ProjectErrorUnsupportedVersion" xml:space="preserve"><value>不支援這個專案格式版本。</value></data>
+  <data name="ProjectErrorDocumentMissing" xml:space="preserve"><value>專案缺少或無法讀取 document.json。</value></data>
+  <data name="ProjectErrorCanvasSize" xml:space="preserve"><value>專案畫紙大小無效。</value></data>
+  <data name="ProjectErrorLayersMissing" xml:space="preserve"><value>專案缺少圖層或筆畫資料。</value></data>
+  <data name="ProjectErrorNoLayers" xml:space="preserve"><value>專案沒有任何圖層。</value></data>
+  <data name="ProjectErrorMissingEntry" xml:space="preserve"><value>專案缺少必要檔案。</value></data>
+  <data name="FileAssociationFailedMessage" xml:space="preserve"><value>請確認權限後再試一次；詳細資訊已記錄。</value></data>
   <data name="ExportFailedTitle" xml:space="preserve"><value>無法匯出圖片</value></data>
+  <data name="ExportProgressTitle" xml:space="preserve"><value>正在匯出 PNG</value></data>
+  <data name="ExportProgressMessage" xml:space="preserve"><value>匯出進度：{0:0}%</value></data>
+  <data name="RecoveryTitle" xml:space="preserve"><value>復原未儲存的專案</value></data>
+  <data name="RecoveryMessage" xml:space="preserve"><value>發現「{0}」在 {1} 的未儲存內容。要復原嗎？</value></data>
+  <data name="RecoverButton" xml:space="preserve"><value>復原</value></data>
+  <data name="DiscardRecoveryButton" xml:space="preserve"><value>捨棄</value></data>
   <data name="UnsavedTitle" xml:space="preserve"><value>儲存變更？</value></data>
   <data name="UnsavedMessage" xml:space="preserve"><value>目前的繪圖尚未儲存。關閉前要先儲存嗎？</value></data>
   <data name="NewDocumentUnsavedMessage" xml:space="preserve"><value>目前的繪圖尚未儲存。建立新畫紙前要先儲存嗎？</value></data>
@@ -243,3 +266,5 @@
   <data name="FileAssociationSuccessMessage" xml:space="preserve"><value>已更新 .mydraw 檔案關聯。</value></data>
   <data name="FileAssociationFailedTitle" xml:space="preserve"><value>無法更新檔案關聯</value></data>
 </root>
+
+

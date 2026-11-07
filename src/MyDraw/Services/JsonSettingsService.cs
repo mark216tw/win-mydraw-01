@@ -118,7 +118,23 @@ public sealed class JsonSettingsService : ISettingsService
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
         {
             _logger.LogWarning(exception, "Unable to load application settings; defaults will be used.");
+            QuarantineCorruptSettings();
             return new AppSettings();
+        }
+    }
+
+    private void QuarantineCorruptSettings()
+    {
+        try
+        {
+            if (File.Exists(_settingsPath))
+            {
+                File.Move(_settingsPath, $"{_settingsPath}.corrupt", overwrite: true);
+            }
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            _logger.LogWarning(exception, "Unable to quarantine corrupt application settings.");
         }
     }
 }

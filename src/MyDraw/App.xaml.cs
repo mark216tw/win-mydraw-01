@@ -51,7 +51,9 @@ public partial class App : Application
                 services.AddSingleton<ThemeService>();
                 services.AddSingleton<BrushCatalog>();
                 services.AddSingleton<FileAssociationService>();
+                services.AddSingleton<FilePickerService>();
                 services.AddSingleton<IProjectFileService, ProjectFileService>();
+                services.AddSingleton<RecoveryService>();
                 services.AddSingleton<DrawingDocument>();
                 services.AddSingleton<MainViewModel>();
                 services.AddSingleton<MainWindow>();

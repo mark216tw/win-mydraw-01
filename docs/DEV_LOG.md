@@ -4,6 +4,93 @@
 
 ---
 
+## 2026-11-07 - v0.14.1 Undo/Redo 修正
+
+### 目標
+修正復原／重做的渲染與歷史狀態問題，讓鍵盤快速鍵與選單行為一致。
+
+### 變更
+- `LayerRenderCache`：復原最後一筆改以 dirty tile 閉包重建；同圖塊其他筆畫不再被漏畫，重畫筆畫不再與舊像素重複疊加；dirty 範圍過大時退回整層重建。
+- `DrawingDocument`：`EndStroke` 走 `PushHistory` 清除 redo；Undo／Redo 會先收尾進行中的筆畫。
+- `DrawingDocument`：`IsModified` 改由存檔歷史狀態推導，復原回存檔點會清除未儲存標記。
+- `MainWindow`：新增 Ctrl+Z／Ctrl+Y／Ctrl+Shift+Z 快速鍵；Edit 選單改用 `x:Bind`。
+- 新增 `LayerRenderCacheTests` 與 undo／redo 狀態測試。
+- `MyDraw.csproj`、`MyDraw.sln`：加入 arm64 平台與條件式 `PlatformTarget`／`RuntimeIdentifier`。
+- 新增繁體中文專案文件：`README.md`、`docs/專案說明.md`、`docs/使用指南.md`、`docs/系統架構與技術文件.md`、`docs/系統設計文件.md`、`docs/開發指南.md`、`docs/README.md`。
+- 準備 0.14.1 GitHub Release：x64 與 arm64 non-self-contained 發行檔。
+
+### 問題與解法
+- 原本 `RemoveLastStroke` 只重畫與被移除筆畫範圍相交的筆畫，會漏掉同 tile 但未重疊的筆畫；改為 tile 閉包後修正。
+- 復原到存檔點仍顯示 `*`：改以 undo 疊頂端項目作為存檔狀態 token，並處理存檔後分支。
+- `dotnet build` 因執行中的 MyDraw 鎖住 exe 失敗；關閉執行中的程式後重試。
+- 第一次跑 smoke 時啟動出現前次復原對話框，導致後續 ContentDialog 衝突；暫時移開 recovery 檔後重跑，結束後已還原使用者 recovery 檔。
+
+### 驗證
+- `dotnet build MyDraw.sln -c Debug -p:Platform=x64`：0 警告 0 錯誤。
+- `dotnet test MyDraw.sln -c Debug -p:Platform=x64`：24/24 通過。
+- `dotnet format MyDraw.sln --verify-no-changes --no-restore`：通過。
+- `Verify-BrushEffects.ps1`：全部通過（慢／快噴槍亮度 156）。
+- `Verify-UiSmoke.ps1`：全部通過（重複筆畫延遲 36 ms）。
+- `dotnet build src\MyDraw\MyDraw.csproj -c Debug -p:Platform=arm64`：通過。
+- x64／arm64 non-self-contained `dotnet publish`：通過；輸出不含 `coreclr.dll`、`hostfxr.dll`、`Microsoft.WindowsAppRuntime.dll`。
+- 以 PE header 確認 `MyDraw.exe`／`MyDraw.dll` 分別為 Amd64 與 Arm64。
+- 以 x64 發行版實際啟動，確認視窗可正常顯示。
+
+### 待辦／已知限制
+- 圖層屬性（改名、透明度、顯示、鎖定）與畫布尺寸仍不納入 Undo（本次依指示略過）。
+- 尚未實機長時間驗證 keyboard accelerator 與高 DPI。
+
+---
+
+## 2026-11-07 - v0.14.0 資料安全、英文介面與品質調整
+
+### 目標
+依序完成品質清單 1–4、7–16：資料安全、錯誤訊息、無障礙、UI 測試穩定化、MainWindow 漸進拆分、圖層復原、匯出進度、Undo 圖塊、即時筆畫、螢光筆順序與裝置遺失處理。
+
+### 變更
+- 第一層工具列原子筆與鉛筆互換，預設畫筆改為原子筆。
+- 新增 `RecoveryService`：30 秒自動復原、復原／捨棄提示、7 天清理；成功儲存時清除，關閉時寫入最後復原快照並保留。
+- `ProjectFileService`：儲存前保留最新 `.bak`；可將目前筆畫一併寫入復原快照。
+- `JsonSettingsService`：損壞的 `settings.json` 隔離為 `.corrupt`。
+- 新增最近開啟清單（最多 10 筆）與檔案選單子選單。
+- 刪除圖層／最愛畫筆的確認對話框預設改為取消。
+- 新增 `Strings/en-US/Resources.resw`，與 zh-Hant 完整 key 對齊；新增資源 key 對齊測試。
+- 新增英文資源；介面語言跟隨 Windows 語言，移除未封裝版本無效的手動語言選單。
+- 移除硬編碼 A4 文案與服務層錯誤訊息。
+- 關閉程式時不再詢問是否儲存；有未儲存變更時先寫入 recovery 快照，再直接關閉。
+- 畫布補 `AutomationProperties.Name`／`HelpText`，工具狀態加入 LiveSetting。
+- 最愛畫筆按鈕改為 `AutomationId`，UI smoke 不再用中文 Name 查找；英文資源 key 亦可用 ID 測試。
+- `DrawingDocument`：新增圖層可 Undo／Redo；刪除圖層不再清空歷史。
+- PNG 匯出新增進度對話框與取消；取消時刪除半成品。
+- `LayerRenderCache`：Undo 最後一筆只重建受影響 tile；移除獨立高亮圖塊，螢光筆回到正常 z-order（重疊略加深）。
+- `MainWindow` 先抽出 `FilePickerService`；Dialog／ProjectCoordinator 仍待後續漸進拆分。
+- Win2D `CanvasDevice.DeviceLost` 時清除快取並重建。
+- 版本與文件更新至 0.14.0。
+
+### 問題與解法
+- 自動復原第一次寫入因復原目錄不存在而失敗；改為寫入前 `Directory.CreateDirectory`。
+- 未封裝 WinUI 的 MRT 不支援執行期手動切換 XAML 語言；本版本改為跟隨 Windows 語言，不再提供手動語言選單。
+- 關閉時只寫 recovery、不自動覆寫原 `.mydraw`；未命名檔案下次啟動可由 recovery 復原。
+- `ResourceLoader.GetString` 對 `.Text` resource key 需使用 `/Text` 形式；修正最近開啟選單的 key。
+- 螢光筆改回正常 z-order 後，重疊會略為加深，已依討論接受。
+
+### 驗證
+- `dotnet build`：0 警告、0 錯誤。
+- `dotnet format`：通過。
+- `dotnet test`：19/19 通過（含資源 key 對齊、最近專案、備份、目前筆畫存檔）。
+- `Verify-UiSmoke.ps1`：全部通過，150 筆延遲 41 ms。
+- `Verify-BrushEffects.ps1`、`Verify-OpenExport.ps1`：通過。
+- 手動建立復原快照後啟動，確認可復原並載入 800×600 專案。
+
+### 待辦／已知限制
+- 英文介面由 Windows 語言決定；未封裝版本不支援 App 內手動切換。
+- MainWindow 尚未完全拆出 DialogService／ProjectCoordinator。
+- 圖層改名、透明度、顯示與鎖定尚未納入 Undo；目前新增、刪除、排序可復原。
+- 即時筆畫仍以整筆準備 + 受影響 tile 重畫；穩定前段 sampling/geometry 快取尚未完成。
+- 自動復原 30 秒實機長時間測試、高 DPI／High Contrast 尚未完整驗證。
+
+---
+
 ## 2026-11-07 - MIT License
 
 ### 目標
@@ -409,5 +496,9 @@
 - 目前為單圖層記憶體筆劃；尚未支援專案儲存、匯出及圖片匯入。
 - 橡皮擦以白色像素筆劃呈現，透明畫布與真正像素擦除留待圖層引擎階段完成。
 - 尚未在實體 Wacom、Huion、XP-Pen 與 Surface Pen 裝置上驗證壓感及傾角。
+
+
+
+
 
 

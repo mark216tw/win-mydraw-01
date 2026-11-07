@@ -123,7 +123,6 @@ internal sealed class LiveStrokeCache : IDisposable
             return;
         }
 
-        bool isHighlighter = stroke.Tool == DrawingTool.Highlighter;
         for (int tileY = firstTileY; tileY <= lastTileY; tileY++)
         {
             for (int tileX = firstTileX; tileX <= lastTileX; tileX++)
@@ -132,7 +131,7 @@ internal sealed class LiveStrokeCache : IDisposable
                 using CanvasDrawingSession session = tile.CreateDrawingSession();
                 session.Clear(Colors.Transparent);
                 session.Transform = Matrix3x2.CreateTranslation(-tileX * TileSize, -tileY * TileSize);
-                session.Blend = isHighlighter ? CanvasBlend.Copy : CanvasBlend.SourceOver;
+                session.Blend = CanvasBlend.SourceOver;
                 BrushRenderer.Draw(session, stroke, _prepared);
             }
         }
