@@ -231,7 +231,7 @@
   <data name="MenuSettingsAbout.Text" xml:space="preserve"><value>關於 MyDraw繪圖板</value></data>
   <data name="AboutTitle" xml:space="preserve"><value>關於</value></data>
   <data name="AboutVersionFormat" xml:space="preserve"><value>版本：{0}&#10;檔案版本：{1}</value></data>
-  <data name="AboutLicense" xml:space="preserve"><value>本程式尚未另行宣告應用程式授權。使用的第三方套件依各自授權條款提供。</value></data>
+  <data name="AboutLicense" xml:space="preserve"><value>本程式以 MIT License 釋出；使用的第三方套件依各自授權條款提供。</value></data>
   <data name="AboutPrivacy" xml:space="preserve"><value>繪圖與設定儲存於本機。本程式不會將繪圖上傳至伺服器。</value></data>
   <data name="FileAssociationTitle" xml:space="preserve"><value>檔案關聯設定</value></data>
   <data name="FileAssociationStatusRegistered" xml:space="preserve"><value>目前 .mydraw 檔案已關聯到 MyDraw。</value></data>

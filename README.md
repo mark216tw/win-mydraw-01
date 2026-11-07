@@ -63,3 +63,7 @@ dotnet run --project src/MyDraw/MyDraw.csproj -c Debug -p:Platform=x64
 ## 開發階段
 
 PDF／JPG 匯出仍屬後續開發項目。圖層刪除前會詢問確認，目前無法復原；刪除後會清空歷史以避免引用已刪除圖層。
+
+## 授權
+
+本專案採用 [MIT License](LICENSE) 釋出。

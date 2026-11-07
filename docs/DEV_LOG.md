@@ -4,6 +4,23 @@
 
 ---
 
+## 2026-11-07 - MIT License
+
+### 目標
+將專案授權明確化，並提交到 GitHub 公開檔案庫。
+
+### 變更
+- 新增根目錄 `LICENSE`（MIT License，Copyright 2026 mark216tw）。
+- `README.md` 新增授權章節連結。
+- About 對話框的授權說明改為 MIT License。
+- 不變更應用程式版本。
+
+### 驗證
+- `dotnet build MyDraw.sln -c Debug -p:Platform=x64` 通過。
+- 以 `mark216tw <mark216tw@gmail.com>` 提交並推送至 `https://github.com/mark216tw/win-mydraw-01`。
+
+---
+
 ## 2026-11-07 - v0.13.0 工具列、最愛排序與檔案關聯
 
 ### 目標
