@@ -1,0 +1,18 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="AppBackgroundBrush" Color="#FFEDF5EC" />
+            <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#FFF8FCF6" />
+            <SolidColorBrush x:Key="PanelBorderBrush" Color="#FFBDD6B8" />
+            <SolidColorBrush x:Key="WorkspaceBrush" Color="#FFD8E5D4" />
+            <SolidColorBrush x:Key="ToolbarSelectedBrush" Color="#FF8BC680" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="AppBackgroundBrush" Color="#FF17241A" />
+            <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#FF203326" />
+            <SolidColorBrush x:Key="PanelBorderBrush" Color="#FF3E5E43" />
+            <SolidColorBrush x:Key="WorkspaceBrush" Color="#FF0E1710" />
+            <SolidColorBrush x:Key="ToolbarSelectedBrush" Color="#FF397246" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>

@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="AppTitle" xml:space="preserve"><value>MyDraw繪圖板</value></data>
+
+  <!-- 頂部系統選單 MenuBar -->
+  <data name="FileMenu.Title" xml:space="preserve"><value>檔案</value></data>
+  <data name="FileMenu.AutomationProperties.Name" xml:space="preserve"><value>檔案選單</value></data>
+  <data name="MenuFileNew.Text" xml:space="preserve"><value>新增畫紙</value></data>
+  <data name="MenuFileOpen.Text" xml:space="preserve"><value>開啟專案…</value></data>
+  <data name="MenuFileSave.Text" xml:space="preserve"><value>儲存專案</value></data>
+  <data name="MenuFileSaveAs.Text" xml:space="preserve"><value>另存專案…</value></data>
+  <data name="MenuFileExport.Text" xml:space="preserve"><value>匯出 PNG 圖片…</value></data>
+
+  <data name="EditMenu.Title" xml:space="preserve"><value>編輯</value></data>
+  <data name="EditMenu.AutomationProperties.Name" xml:space="preserve"><value>編輯選單</value></data>
+  <data name="MenuEditUndo.Text" xml:space="preserve"><value>復原</value></data>
+  <data name="MenuEditRedo.Text" xml:space="preserve"><value>重做</value></data>
+
+  <data name="CanvasMenu.Title" xml:space="preserve"><value>畫布</value></data>
+  <data name="CanvasMenu.AutomationProperties.Name" xml:space="preserve"><value>畫布選單</value></data>
+  <data name="MenuCanvasSize.Text" xml:space="preserve"><value>畫紙大小…</value></data>
+
+  <data name="ViewMenu.Title" xml:space="preserve"><value>檢視</value></data>
+  <data name="ViewMenu.AutomationProperties.Name" xml:space="preserve"><value>檢視選單</value></data>
+  <data name="MenuViewGrid.Text" xml:space="preserve"><value>顯示格線</value></data>
+  <data name="MenuViewZoomIn.Text" xml:space="preserve"><value>放大畫布</value></data>
+  <data name="MenuViewZoomOut.Text" xml:space="preserve"><value>縮小畫布</value></data>
+  <data name="MenuViewZoomReset.Text" xml:space="preserve"><value>重設縮放 (100%)</value></data>
+  <data name="MenuViewImmersive.Text" xml:space="preserve"><value>沉浸模式</value></data>
+  <data name="MenuViewFullScreen.Text" xml:space="preserve"><value>全螢幕</value></data>
+
+  <data name="SettingsMenu.Title" xml:space="preserve"><value>設定</value></data>
+  <data name="SettingsMenu.AutomationProperties.Name" xml:space="preserve"><value>設定選單</value></data>
+  <data name="MenuSettingsAppearance.Text" xml:space="preserve"><value>外觀與主題設定…</value></data>
+  <data name="MenuSettingsFileAssociation.Text" xml:space="preserve"><value>檔案關聯設定…</value></data>
+
+  <!-- 頂部狀態快捷按鈕 -->
+  <data name="CanvasSizeButton.ToolTipService.ToolTip" xml:space="preserve"><value>變更畫紙大小 (Ctrl+Alt+C)</value></data>
+  <data name="CanvasSizeButton.AutomationProperties.Name" xml:space="preserve"><value>畫紙大小</value></data>
+  <data name="ZoomResetButton.ToolTipService.ToolTip" xml:space="preserve"><value>點擊重設為 100% (Ctrl+0)</value></data>
+  <data name="ZoomResetButton.AutomationProperties.Name" xml:space="preserve"><value>重設畫布縮放比例</value></data>
+
+  <!-- 左側集中式工具列：復原/重做與畫筆 -->
+  <data name="UndoButton.ToolTipService.ToolTip" xml:space="preserve"><value>復原 (Ctrl+Z)</value></data>
+  <data name="UndoButton.AutomationProperties.Name" xml:space="preserve"><value>復原</value></data>
+  <data name="RedoButton.ToolTipService.ToolTip" xml:space="preserve"><value>重做 (Ctrl+Y)</value></data>
+  <data name="RedoButton.AutomationProperties.Name" xml:space="preserve"><value>重做</value></data>
+
+  <data name="PenTool.ToolTipService.ToolTip" xml:space="preserve"><value>鋼筆 (P)</value></data>
+  <data name="PenTool.AutomationProperties.Name" xml:space="preserve"><value>選擇鋼筆</value></data>
+  <data name="PenToolLabel.Text" xml:space="preserve"><value>鋼筆</value></data>
+  <data name="PencilTool.ToolTipService.ToolTip" xml:space="preserve"><value>鉛筆</value></data>
+  <data name="PencilTool.AutomationProperties.Name" xml:space="preserve"><value>選擇鉛筆</value></data>
+  <data name="HighlighterTool.ToolTipService.ToolTip" xml:space="preserve"><value>螢光筆 (M)</value></data>
+  <data name="HighlighterTool.AutomationProperties.Name" xml:space="preserve"><value>選擇螢光筆</value></data>
+
+  <data name="MoreBrushesButton.ToolTipService.ToolTip" xml:space="preserve"><value>更多畫筆（馬克筆、噴槍、鋼筆、蠟筆、書法筆）</value></data>
+  <data name="MoreBrushesButton.AutomationProperties.Name" xml:space="preserve"><value>開啟更多畫筆選單</value></data>
+  <data name="MoreBrushesSectionTitle.Text" xml:space="preserve"><value>更多畫筆</value></data>
+  <data name="MoreBrushesFormat" xml:space="preserve"><value>更多畫筆（目前：{0}）</value></data>
+
+  <data name="FavoriteBrushesButton.ToolTipService.ToolTip" xml:space="preserve"><value>最愛畫筆</value></data>
+  <data name="FavoriteBrushesButton.AutomationProperties.Name" xml:space="preserve"><value>開啟最愛畫筆選單</value></data>
+  <data name="FavoriteBrushesSectionTitle.Text" xml:space="preserve"><value>最愛畫筆</value></data>
+  <data name="SaveCurrentFavoriteBrushButton.Content" xml:space="preserve"><value>儲存目前畫筆</value></data>
+  <data name="SaveCurrentFavoriteBrushButton.AutomationProperties.Name" xml:space="preserve"><value>儲存目前畫筆為最愛</value></data>
+  <data name="FavoriteBrushEmptyState.Text" xml:space="preserve"><value>尚未儲存最愛畫筆</value></data>
+  <data name="SaveFavoriteBrushTitle" xml:space="preserve"><value>儲存最愛畫筆</value></data>
+  <data name="RenameFavoriteBrushTitle" xml:space="preserve"><value>重新命名最愛畫筆</value></data>
+  <data name="FavoriteBrushNameHeader" xml:space="preserve"><value>畫筆名稱</value></data>
+  <data name="DefaultFavoriteBrushNameFormat" xml:space="preserve"><value>{0} {1}</value></data>
+  <data name="RenameFavoriteBrushButton.ToolTipService.ToolTip" xml:space="preserve"><value>重新命名</value></data>
+  <data name="RenameFavoriteBrushButton.AutomationProperties.Name" xml:space="preserve"><value>重新命名最愛畫筆</value></data>
+  <data name="DeleteFavoriteBrushButton.ToolTipService.ToolTip" xml:space="preserve"><value>刪除</value></data>
+  <data name="DeleteFavoriteBrushButton.AutomationProperties.Name" xml:space="preserve"><value>刪除最愛畫筆</value></data>
+  <data name="DeleteFavoriteBrushTitle" xml:space="preserve"><value>刪除最愛畫筆？</value></data>
+  <data name="DeleteFavoriteBrushMessage" xml:space="preserve"><value>確定要刪除「{0}」嗎？此動作無法復原。</value></data>
+  <data name="MoveFavoriteBrushUpButton.ToolTipService.ToolTip" xml:space="preserve"><value>上移</value></data>
+  <data name="MoveFavoriteBrushUpButton.AutomationProperties.Name" xml:space="preserve"><value>上移最愛畫筆</value></data>
+  <data name="MoveFavoriteBrushDownButton.ToolTipService.ToolTip" xml:space="preserve"><value>下移</value></data>
+  <data name="MoveFavoriteBrushDownButton.AutomationProperties.Name" xml:space="preserve"><value>下移最愛畫筆</value></data>
+
+  <data name="BallpointTool.ToolTipService.ToolTip" xml:space="preserve"><value>原子筆</value></data>
+  <data name="BallpointTool.AutomationProperties.Name" xml:space="preserve"><value>選擇原子筆</value></data>
+  <data name="BallpointToolLabel.Text" xml:space="preserve"><value>原子筆</value></data>
+  <data name="CalligraphyTool.ToolTipService.ToolTip" xml:space="preserve"><value>書法筆</value></data>
+  <data name="CalligraphyTool.AutomationProperties.Name" xml:space="preserve"><value>選擇書法筆</value></data>
+  <data name="CalligraphyToolLabel.Text" xml:space="preserve"><value>書法筆</value></data>
+  <data name="MarkerTool.ToolTipService.ToolTip" xml:space="preserve"><value>馬克筆</value></data>
+  <data name="MarkerTool.AutomationProperties.Name" xml:space="preserve"><value>選擇馬克筆</value></data>
+  <data name="MarkerToolLabel.Text" xml:space="preserve"><value>馬克筆</value></data>
+  <data name="AirbrushTool.ToolTipService.ToolTip" xml:space="preserve"><value>噴槍</value></data>
+  <data name="AirbrushTool.AutomationProperties.Name" xml:space="preserve"><value>選擇噴槍</value></data>
+  <data name="AirbrushToolLabel.Text" xml:space="preserve"><value>噴槍</value></data>
+  <data name="CrayonTool.ToolTipService.ToolTip" xml:space="preserve"><value>蠟筆</value></data>
+  <data name="CrayonTool.AutomationProperties.Name" xml:space="preserve"><value>選擇蠟筆</value></data>
+  <data name="CrayonToolLabel.Text" xml:space="preserve"><value>蠟筆</value></data>
+
+  <data name="EraserTool.ToolTipService.ToolTip" xml:space="preserve"><value>橡皮擦 (E)</value></data>
+  <data name="EraserTool.AutomationProperties.Name" xml:space="preserve"><value>選擇橡皮擦</value></data>
+  <data name="PanTool.ToolTipService.ToolTip" xml:space="preserve"><value>平移畫布 (H 或按住空白鍵拖曳)</value></data>
+  <data name="PanTool.AutomationProperties.Name" xml:space="preserve"><value>選擇畫布平移工具</value></data>
+
+  <data name="ToolNamePen" xml:space="preserve"><value>鋼筆</value></data>
+  <data name="ToolNamePencil" xml:space="preserve"><value>鉛筆</value></data>
+  <data name="ToolNameBallpoint" xml:space="preserve"><value>原子筆</value></data>
+  <data name="ToolNameMarker" xml:space="preserve"><value>馬克筆</value></data>
+  <data name="ToolNameHighlighter" xml:space="preserve"><value>螢光筆</value></data>
+  <data name="ToolNameCalligraphy" xml:space="preserve"><value>書法筆</value></data>
+  <data name="ToolNameAirbrush" xml:space="preserve"><value>噴槍</value></data>
+  <data name="ToolNameCrayon" xml:space="preserve"><value>蠟筆</value></data>
+  <data name="ToolNameEraser" xml:space="preserve"><value>橡皮擦</value></data>
+  <data name="ToolNamePan" xml:space="preserve"><value>平移</value></data>
+
+  <!-- 第二層選單：筆刷、顏色、圖層 -->
+  <data name="BrushSettingsButton.ToolTipService.ToolTip" xml:space="preserve"><value>筆刷粗細、不透明度與筆壓 ([ / ] 調粗細)</value></data>
+  <data name="BrushSettingsButton.AutomationProperties.Name" xml:space="preserve"><value>開啟筆刷設定選單</value></data>
+  <data name="BrushSectionTitle.Text" xml:space="preserve"><value>筆刷設定</value></data>
+  <data name="BrushSizeLabel.Text" xml:space="preserve"><value>粗細</value></data>
+  <data name="BrushSizeSlider.AutomationProperties.Name" xml:space="preserve"><value>筆刷粗細</value></data>
+  <data name="OpacityLabel.Text" xml:space="preserve"><value>不透明度</value></data>
+  <data name="OpacitySlider.AutomationProperties.Name" xml:space="preserve"><value>筆刷不透明度</value></data>
+  <data name="SizePressureCheckBox.Content" xml:space="preserve"><value>筆壓控制粗細</value></data>
+  <data name="OpacityPressureCheckBox.Content" xml:space="preserve"><value>筆壓控制濃淡</value></data>
+  <data name="SoftnessLabel.Text" xml:space="preserve"><value>柔和度</value></data>
+  <data name="SoftnessSlider.AutomationProperties.Name" xml:space="preserve"><value>筆刷柔和度</value></data>
+  <data name="FlowLabel.Text" xml:space="preserve"><value>流量</value></data>
+  <data name="FlowSlider.AutomationProperties.Name" xml:space="preserve"><value>筆刷流量</value></data>
+  <data name="AirbrushModeLabel.Text" xml:space="preserve"><value>噴槍模式</value></data>
+  <data name="AirbrushModeComboBox.AutomationProperties.Name" xml:space="preserve"><value>噴槍模式</value></data>
+  <data name="AirbrushModeMistItemText" xml:space="preserve"><value>霧狀</value></data>
+  <data name="AirbrushModeGrainItemText" xml:space="preserve"><value>顆粒</value></data>
+  <data name="PressureCurveLabel.Text" xml:space="preserve"><value>壓力曲線</value></data>
+  <data name="PressureCurveComboBox.AutomationProperties.Name" xml:space="preserve"><value>壓力曲線</value></data>
+  <data name="PressureCurveSoftItemText" xml:space="preserve"><value>柔軟</value></data>
+  <data name="PressureCurveLinearItemText" xml:space="preserve"><value>線性</value></data>
+  <data name="PressureCurveHardItemText" xml:space="preserve"><value>堅硬</value></data>
+
+  <data name="ColorFlyoutButton.ToolTipService.ToolTip" xml:space="preserve"><value>筆刷顏色與自訂調色盤</value></data>
+  <data name="ColorFlyoutButton.AutomationProperties.Name" xml:space="preserve"><value>開啟顏色選單</value></data>
+  <data name="ColorSectionTitle.Text" xml:space="preserve"><value>常用顏色</value></data>
+  <data name="CustomColorExpander.Header" xml:space="preserve"><value>自訂調色盤</value></data>
+  <data name="ColorPicker.AutomationProperties.Name" xml:space="preserve"><value>自訂筆刷顏色</value></data>
+  <data name="InkSwatch.AutomationProperties.Name" xml:space="preserve"><value>深灰色</value></data>
+  <data name="WhiteSwatch.AutomationProperties.Name" xml:space="preserve"><value>白色</value></data>
+  <data name="RedSwatch.AutomationProperties.Name" xml:space="preserve"><value>紅色</value></data>
+  <data name="OrangeSwatch.AutomationProperties.Name" xml:space="preserve"><value>橘色</value></data>
+  <data name="YellowSwatch.AutomationProperties.Name" xml:space="preserve"><value>黃色</value></data>
+  <data name="GreenSwatch.AutomationProperties.Name" xml:space="preserve"><value>綠色</value></data>
+  <data name="TealSwatch.AutomationProperties.Name" xml:space="preserve"><value>青綠色</value></data>
+  <data name="CyanSwatch.AutomationProperties.Name" xml:space="preserve"><value>青色</value></data>
+  <data name="BlueSwatch.AutomationProperties.Name" xml:space="preserve"><value>藍色</value></data>
+  <data name="IndigoSwatch.AutomationProperties.Name" xml:space="preserve"><value>靛藍色</value></data>
+  <data name="PurpleSwatch.AutomationProperties.Name" xml:space="preserve"><value>紫色</value></data>
+  <data name="PinkSwatch.AutomationProperties.Name" xml:space="preserve"><value>粉紅色</value></data>
+  <data name="BrownSwatch.AutomationProperties.Name" xml:space="preserve"><value>棕色</value></data>
+  <data name="SlateSwatch.AutomationProperties.Name" xml:space="preserve"><value>灰藍色</value></data>
+  <data name="GraySwatch.AutomationProperties.Name" xml:space="preserve"><value>淺灰色</value></data>
+  <data name="MistSwatch.AutomationProperties.Name" xml:space="preserve"><value>霧白色</value></data>
+  <data name="AmberSwatch.AutomationProperties.Name" xml:space="preserve"><value>琥珀色</value></data>
+  <data name="LimeSwatch.AutomationProperties.Name" xml:space="preserve"><value>萊姆色</value></data>
+  <data name="SkySwatch.AutomationProperties.Name" xml:space="preserve"><value>天藍色</value></data>
+  <data name="RoseSwatch.AutomationProperties.Name" xml:space="preserve"><value>玫瑰色</value></data>
+
+  <data name="LayersFlyoutButton.ToolTipService.ToolTip" xml:space="preserve"><value>圖層管理</value></data>
+  <data name="LayersFlyoutButton.AutomationProperties.Name" xml:space="preserve"><value>開啟圖層選單</value></data>
+  <data name="LayerSectionTitle.Text" xml:space="preserve"><value>圖層</value></data>
+  <data name="AddLayerButton.ToolTipService.ToolTip" xml:space="preserve"><value>新增圖層</value></data>
+  <data name="AddLayerButton.AutomationProperties.Name" xml:space="preserve"><value>新增圖層</value></data>
+  <data name="DefaultLayerName.Text" xml:space="preserve"><value>繪圖層 1</value></data>
+  <data name="NewLayerName" xml:space="preserve"><value>圖層 {0}</value></data>
+  <data name="LayerNameEditor.Header" xml:space="preserve"><value>圖層名稱</value></data>
+  <data name="LayerNameEditor.AutomationProperties.Name" xml:space="preserve"><value>圖層名稱</value></data>
+  <data name="LayerVisibleCheckBox.Content" xml:space="preserve"><value>顯示</value></data>
+  <data name="LayerLockedCheckBox.Content" xml:space="preserve"><value>鎖定</value></data>
+  <data name="LayerOpacitySlider.Header" xml:space="preserve"><value>圖層不透明度</value></data>
+  <data name="LayerOpacitySlider.AutomationProperties.Name" xml:space="preserve"><value>圖層不透明度</value></data>
+  <data name="LayerUpButton.ToolTipService.ToolTip" xml:space="preserve"><value>圖層上移</value></data>
+  <data name="LayerUpButton.AutomationProperties.Name" xml:space="preserve"><value>圖層上移</value></data>
+  <data name="LayerDownButton.ToolTipService.ToolTip" xml:space="preserve"><value>圖層下移</value></data>
+  <data name="LayerDownButton.AutomationProperties.Name" xml:space="preserve"><value>圖層下移</value></data>
+  <data name="DeleteLayerButton.ToolTipService.ToolTip" xml:space="preserve"><value>刪除圖層</value></data>
+  <data name="DeleteLayerButton.AutomationProperties.Name" xml:space="preserve"><value>刪除圖層</value></data>
+  <data name="DeleteLayerTitle" xml:space="preserve"><value>刪除圖層？</value></data>
+  <data name="DeleteLayerMessage" xml:space="preserve"><value>此圖層及其筆劃將被刪除，無法復原。至少保留一個圖層。</value></data>
+  <data name="DeleteButtonText" xml:space="preserve"><value>刪除</value></data>
+
+  <!-- 畫布提示與對話框 -->
+  <data name="CanvasHint.Text" xml:space="preserve"><value>滾輪縮放 · 右鍵 / 空白鍵平移</value></data>
+  <data name="SettingsTitle" xml:space="preserve"><value>外觀與主題設定</value></data>
+  <data name="DisplayModeHeader" xml:space="preserve"><value>顯示模式</value></data>
+  <data name="SystemModeText" xml:space="preserve"><value>跟隨系統</value></data>
+  <data name="LightModeText" xml:space="preserve"><value>淺色</value></data>
+  <data name="DarkModeText" xml:space="preserve"><value>深色</value></data>
+  <data name="ColorThemeHeader" xml:space="preserve"><value>色彩主題</value></data>
+  <data name="EyeCareThemeText" xml:space="preserve"><value>黃色護眼</value></data>
+  <data name="OceanThemeText" xml:space="preserve"><value>海洋藍</value></data>
+  <data name="ForestThemeText" xml:space="preserve"><value>森林綠</value></data>
+  <data name="LavenderThemeText" xml:space="preserve"><value>薰衣草紫</value></data>
+  <data name="NeutralThemeText" xml:space="preserve"><value>中性灰</value></data>
+
+  <data name="CanvasPresetCurrent" xml:space="preserve"><value>目前大小</value></data>
+  <data name="CanvasPresetCustom" xml:space="preserve"><value>自訂大小</value></data>
+  <data name="CanvasWidth" xml:space="preserve"><value>寬度（像素）</value></data>
+  <data name="CanvasHeight" xml:space="preserve"><value>高度（像素）</value></data>
+  <data name="CanvasDialogTitle" xml:space="preserve"><value>畫紙大小</value></data>
+  <data name="CanvasShrinkTitle" xml:space="preserve"><value>縮小畫紙？</value></data>
+  <data name="CanvasShrinkMessage" xml:space="preserve"><value>超出新畫紙範圍的內容會暫時隱藏，但不會被刪除。之後放大畫紙即可恢復顯示。</value></data>
+  <data name="ApplyButton" xml:space="preserve"><value>套用</value></data>
+  <data name="ContinueButton" xml:space="preserve"><value>繼續縮小</value></data>
+  <data name="CancelButton" xml:space="preserve"><value>取消</value></data>
+  <data name="CloseButton" xml:space="preserve"><value>關閉</value></data>
+  <data name="UntitledFileName" xml:space="preserve"><value>未命名</value></data>
+  <data name="ProjectFileType" xml:space="preserve"><value>MyDraw 專案</value></data>
+  <data name="SaveFailedTitle" xml:space="preserve"><value>無法儲存專案</value></data>
+  <data name="OpenFailedTitle" xml:space="preserve"><value>無法開啟專案</value></data>
+  <data name="ExportFailedTitle" xml:space="preserve"><value>無法匯出圖片</value></data>
+  <data name="UnsavedTitle" xml:space="preserve"><value>儲存變更？</value></data>
+  <data name="UnsavedMessage" xml:space="preserve"><value>目前的繪圖尚未儲存。關閉前要先儲存嗎？</value></data>
+  <data name="NewDocumentUnsavedMessage" xml:space="preserve"><value>目前的繪圖尚未儲存。建立新畫紙前要先儲存嗎？</value></data>
+  <data name="OpenDocumentUnsavedMessage" xml:space="preserve"><value>目前的繪圖尚未儲存。開啟其他專案前要先儲存嗎？</value></data>
+  <data name="SaveButtonText" xml:space="preserve"><value>儲存</value></data>
+  <data name="DontSaveButton" xml:space="preserve"><value>不儲存</value></data>
+  <data name="ToolbarPositionHeader" xml:space="preserve"><value>繪圖工具列位置</value></data>
+  <data name="ToolbarLeftText" xml:space="preserve"><value>左側</value></data>
+  <data name="ToolbarRightText" xml:space="preserve"><value>右側</value></data>
+  <data name="MenuSettingsAbout.Text" xml:space="preserve"><value>關於 MyDraw繪圖板</value></data>
+  <data name="AboutTitle" xml:space="preserve"><value>關於</value></data>
+  <data name="AboutVersionFormat" xml:space="preserve"><value>版本：{0}&#10;檔案版本：{1}</value></data>
+  <data name="AboutLicense" xml:space="preserve"><value>本程式尚未另行宣告應用程式授權。使用的第三方套件依各自授權條款提供。</value></data>
+  <data name="AboutPrivacy" xml:space="preserve"><value>繪圖與設定儲存於本機。本程式不會將繪圖上傳至伺服器。</value></data>
+  <data name="FileAssociationTitle" xml:space="preserve"><value>檔案關聯設定</value></data>
+  <data name="FileAssociationStatusRegistered" xml:space="preserve"><value>目前 .mydraw 檔案已關聯到 MyDraw。</value></data>
+  <data name="FileAssociationStatusUnregistered" xml:space="preserve"><value>目前 .mydraw 檔案尚未關聯到 MyDraw。</value></data>
+  <data name="FileAssociationDescription" xml:space="preserve"><value>建立關聯後，雙擊 .mydraw 檔案會使用 MyDraw 開啟。只會寫入目前使用者的設定，不需要系統管理員權限。</value></data>
+  <data name="RegisterAssociationButton" xml:space="preserve"><value>建立關聯</value></data>
+  <data name="RemoveAssociationButton" xml:space="preserve"><value>移除關聯</value></data>
+  <data name="FileAssociationSuccessTitle" xml:space="preserve"><value>檔案關聯</value></data>
+  <data name="FileAssociationSuccessMessage" xml:space="preserve"><value>已更新 .mydraw 檔案關聯。</value></data>
+  <data name="FileAssociationFailedTitle" xml:space="preserve"><value>無法更新檔案關聯</value></data>
+</root>
