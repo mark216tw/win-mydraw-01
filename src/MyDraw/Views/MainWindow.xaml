@@ -11,6 +11,7 @@
     <Grid
         x:Name="RootLayout"
         Background="{ThemeResource AppBackgroundBrush}"
+        KeyboardAcceleratorPlacementMode="Hidden"
         IsTabStop="True"
         KeyDown="RootLayout_KeyDown"
         KeyUp="RootLayout_KeyUp">

@@ -2,7 +2,7 @@
 
 MyDraw 是使用 WinUI 3 與 Win2D 打造的 Windows 原生學生繪圖工具，著重快速啟動、直覺筆刷、低延遲手寫與最大化畫布空間。專案以 .NET 10 開發，採 MIT License 釋出。
 
-- 目前版本：**0.14.1**
+- 目前版本：**0.14.2**
 - 平台：Windows 10 1809（build 17763）以上，支援 **x64** 與 **arm64**
 - 授權：[MIT License](LICENSE)
 
@@ -77,8 +77,8 @@ MyDraw 的目標是提供一個啟動快速、操作集中、適合課堂筆記�
 
 1. 前往 [GitHub Releases](https://github.com/mark216tw/win-mydraw-01/releases)。
 2. 依系統架構下載：
-   - `MyDraw-0.14.1-win-x64.zip`
-   - `MyDraw-0.14.1-win-arm64.zip`
+   - `MyDraw-0.14.2-win-x64.zip`
+   - `MyDraw-0.14.2-win-arm64.zip`
 3. 解壓縮到任意資料夾（不需系統管理員權限）。
 4. 先安裝上方列出的 .NET 10 Desktop Runtime 與 Windows App SDK 1.8 Runtime。
 5. 執行 `MyDraw.exe`。

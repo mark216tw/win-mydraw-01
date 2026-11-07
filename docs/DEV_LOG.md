@@ -4,6 +4,29 @@
 
 ---
 
+## 2026-11-07 - v0.14.2 畫布快速鍵 tooltip 修正
+
+### 目標
+修正啟動程式或滑過畫布時，畫布區出現 Ctrl+Z 快速鍵 tooltip 的問題。
+
+### 變更
+- `Views/MainWindow.xaml`：`RootLayout` 加上 `KeyboardAcceleratorPlacementMode="Hidden"`，保留 `Grid.KeyboardAccelerators` 的復原／重做快速鍵。
+
+### 問題與解法
+- Ctrl+Z／Ctrl+Y／Ctrl+Shift+Z 掛在覆蓋整個視窗的 `RootLayout`，`KeyboardAcceleratorPlacementMode` 預設為 `Auto`，WinUI 會在擁有者（畫布區）自動顯示快速鍵 tooltip。改為 `Hidden` 後不再顯示，選單內的 `KeyboardAcceleratorTextOverride` 不受影響。
+
+### 驗證
+- `dotnet build MyDraw.sln -c Debug -p:Platform=x64`：0 警告 0 錯誤。
+- `dotnet test MyDraw.sln -c Debug -p:Platform=x64`：24/24 通過。
+- `dotnet format MyDraw.sln --verify-no-changes --no-restore`：通過。
+- `tools/Verify-UiSmoke.ps1`：全部通過。
+- x64／arm64 non-self-contained `dotnet publish`：通過；輸出不含執行階段 DLL，`FileVersion` 為 0.14.2.0。
+
+### 待辦
+- 無。
+
+---
+
 ## 2026-11-07 - v0.14.1 Undo/Redo 修正
 
 ### 目標
